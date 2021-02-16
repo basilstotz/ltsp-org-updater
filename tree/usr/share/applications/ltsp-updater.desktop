@@ -4,6 +4,6 @@ Comment=Update a LTSP-Server
 Exec=ltsp-updater
 Terminal=true
 Type=Application
-Icon=ltsp.png
+Icon=ltsp-updater.png
 Categories=System;LTSP;
 Keywords=System;LTSP
