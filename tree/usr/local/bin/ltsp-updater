@@ -10,7 +10,7 @@ if test "$(hostname)" = "%%hostname%%";then
     echo
     echo
     echo
-    cowsay "LTSP is ready!"|lolcat
+    /usr/games/cowsay "LTSP is ready!" | /usr/games/lolcat
 else
     echo
     echo
