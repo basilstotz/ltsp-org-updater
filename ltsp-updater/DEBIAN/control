@@ -1,0 +1,10 @@
+Source: ltsp-updater
+Section: unknown
+Priority: extra
+Maintainer: Basil Stotz <stotz@amxa.ch>
+Package: ltsp-updater
+Version: 1613506938 
+Architecture: amd64
+Depends: debconf
+Description: Setup and maintain a LTSP server on ubuntu
+ Setup and maintain a LTSP server on ubuntu

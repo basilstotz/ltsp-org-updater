@@ -1,0 +1,28 @@
+#!/bin/sh
+
+test $(id --user) = 0 || exec sudo $0
+
+#if test "$(hostname)" = "%%hostname%%";then
+
+    if test -z "$(which ltsp)";then
+        add-apt-repository ppa:ltsp
+        apt update
+        apt-get install cowsay lolcat
+        apt-get install --install-recommends \
+            ltsp ltsp-binaries dnsmasq nfs-kernel-server\
+            openssh-server squashfs-tools ethtool net-tools epoptes
+    fi
+    ltsp dnmasq
+    ltsp image /
+    ltsp nfs
+    ltsp ipxe
+    ltsp initrd
+
+    for I in $(seq 20);do echo;done
+    
+    /usr/games/cowsay "LTSP is ready!" | /usr/games/lolcat
+#else
+#    echo "      ******** please run this programm only on the server ********"
+fi
+sleep 5
+exit
