@@ -7,15 +7,17 @@ if test -z "$(which ltsp)";then
     apt-get install --install-recommends \
         ltsp ltsp-binaries dnsmasq nfs-kernel-server\
         openssh-server squashfs-tools ethtool net-tools epoptes
-    ltsp dnsmasq
-    ltsp image /
-    ltsp ipxe
-    ltsp nfs
-    ltsp initrd
 fi
+
+ltsp dnsmasq
+ltsp image /
+ltsp ipxe
+ltsp nfs
+ltsp initrd
 
 cp -r ./tree/* /
 sed -e "s/%%hostname%%/$(hostname)/g" -i /usr/local/bin/ltsp-updater 
+chmod +x /usr/local/bin/ltsp-updater
 
 exit 0
 
