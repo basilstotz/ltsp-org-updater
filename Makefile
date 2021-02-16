@@ -1,3 +1,3 @@
 .PHONY: install
 install:
-	./bin/install.sh
+	@sudo ./bin/install.sh
