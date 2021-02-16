@@ -1,4 +1,4 @@
-# ubuntu-ltsp-updater
+# ltsp-org-updater
 
 Install a and maintain LTSP-Server (http://ltsp.org) on a Ubuntu or a Debian box. 
 
@@ -6,7 +6,7 @@ Install a and maintain LTSP-Server (http://ltsp.org) on a Ubuntu or a Debian box
 - Search for the `LTSP-Updater` application and run it.
 - Whenever you make changes (install/remove software or add/remove users) run the `LTSP-Updater` again.
 
-To build the Debain package:
+To build the Debian package:
 
 ```
 $ git clone https://github.com/basilstotz/ubuntu-ltsp-updater
