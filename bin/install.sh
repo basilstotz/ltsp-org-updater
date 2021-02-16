@@ -3,7 +3,8 @@
 if test -z "$(which ltsp)";then
     add-apt-repository ppa:ltsp
     apt update
-    apt install --install-recommends \
+    apt-get install cowsay lolcat
+    apt-get install --install-recommends \
         ltsp ltsp-binaries dnsmasq nfs-kernel-server\
         openssh-server squashfs-tools ethtool net-tools epoptes
     ltsp dnsmasq
