@@ -12,9 +12,9 @@ update(){
 	else
   	   add-apt-repository ppa:ltsp
 	fi    
-        apt update
-        apt-get install cowsay lolcat
-        apt-get install --install-recommends \
+        apt-get --yes update
+        apt-get --yes install cowsay lolcat
+        apt-get --yes install --install-recommends \
             ltsp ltsp-binaries dnsmasq nfs-kernel-server \
             openssh-server squashfs-tools ethtool net-tools epoptes
     fi
