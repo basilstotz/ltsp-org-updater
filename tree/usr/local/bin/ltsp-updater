@@ -1,4 +1,7 @@
 #!/bin/sh
+
+exec sudo $0
+
 if test "$(hostname)" = "ltsp";then
     sudo ltsp image /
     sudo ltsp ipxe
