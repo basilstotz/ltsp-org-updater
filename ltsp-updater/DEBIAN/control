@@ -3,7 +3,7 @@ Section: unknown
 Priority: extra
 Maintainer: Basil Stotz <stotz@amxa.ch>
 Package: ltsp-updater
-Version: 1613506938 
+Version: 1613507059 
 Architecture: amd64
 Depends: debconf
 Description: Setup and maintain a LTSP server on ubuntu

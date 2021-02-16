@@ -2,14 +2,20 @@
 
 test $(id --user) = 0 || exec sudo $0
 
-#if test "$(hostname)" = "%%hostname%%";then
-
+update(){
     if test -z "$(which ltsp)";then
-        add-apt-repository ppa:ltsp
+        if cat /etc/issue|grep -q DEBIAN;then
+            wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
+		-O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
+            wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
+		-O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+	else
+  	   add-apt-repository ppa:ltsp
+	fi    
         apt update
         apt-get install cowsay lolcat
         apt-get install --install-recommends \
-            ltsp ltsp-binaries dnsmasq nfs-kernel-server\
+            ltsp ltsp-binaries dnsmasq nfs-kernel-server \
             openssh-server squashfs-tools ethtool net-tools epoptes
     fi
     ltsp dnmasq
@@ -17,12 +23,10 @@ test $(id --user) = 0 || exec sudo $0
     ltsp nfs
     ltsp ipxe
     ltsp initrd
-
-    for I in $(seq 20);do echo;done
-    
+    for I in $(seq 20);do echo;done    
     /usr/games/cowsay "LTSP is ready!" | /usr/games/lolcat
-#else
-#    echo "      ******** please run this programm only on the server ********"
-fi
+}
+
+update
 sleep 5
 exit
