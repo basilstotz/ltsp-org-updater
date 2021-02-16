@@ -1,0 +1,19 @@
+#!/bin/sh
+if test "$(hostname)" = "ltsp";then
+    sudo ltsp image /
+    sudo ltsp ipxe
+    sudo ltsp initrd
+    echo
+    echo
+    echo
+    echo
+    cowsay "LTSP is ready!"|lolcat
+else
+    echo
+    echo
+    echo
+    echo
+    echo "      ******** please run this programm only on the server ********"
+fi
+sleep 5
+exit

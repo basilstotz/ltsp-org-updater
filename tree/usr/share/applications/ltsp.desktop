@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=LTSP-Updater
+Comment=Update a LTSP-Server 
+Exec=ltsp-updater
+Terminal=true
+Type=Application
+Icon=ltsp.png
+Categories=System;LTSP;
+Keywords=System;LTSP
