@@ -13,8 +13,8 @@ if test -z "$(which ltsp)";then
     ltsp initrd
 fi
 
-sed -e "s/%%hostname%%/$(hostname)/g" -i ./tree/usr/local/bin/ltsp-updater 
 cp -r ./tree/* /
+sed -e "s/%%hostname%%/$(hostname)/g" -i /usr/local/bin/ltsp-updater 
 
 exit 0
 

@@ -2,7 +2,7 @@
 
 exec sudo $0
 
-if test "$(hostname)" = "ltsp";then
+if test "$(hostname)" = "%%hostname%%";then
     sudo ltsp image /
     sudo ltsp ipxe
     sudo ltsp initrd
