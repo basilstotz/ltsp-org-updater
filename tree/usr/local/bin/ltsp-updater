@@ -1,6 +1,6 @@
 #!/bin/sh
 
-exec sudo $0
+test $(id --user) = 0 || exec sudo $0
 
 if test "$(hostname)" = "%%hostname%%";then
     sudo ltsp image /
