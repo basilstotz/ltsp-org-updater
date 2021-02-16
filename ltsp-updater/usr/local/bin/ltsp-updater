@@ -4,7 +4,7 @@ test $(id --user) = 0 || exec sudo $0
 
 update(){
     if test -z "$(which ltsp)";then
-        if cat /etc/issue|grep -q DEBIAN;then
+        if cat /etc/issue|grep -q Debian;then
             wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
 		-O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
             wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
@@ -23,7 +23,7 @@ update(){
     ltsp nfs
     ltsp ipxe
     ltsp initrd
-    for I in $(seq 20);do echo;done    
+    for I in $(seq 30);do echo;done    
     /usr/games/cowsay "LTSP is ready!" | /usr/games/lolcat
 }
 
