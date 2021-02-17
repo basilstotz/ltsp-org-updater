@@ -2,7 +2,7 @@
 
 Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" on a Ubuntu box. It's designed for teachers with no experience on the shell.
 
-До українського перекладу: 
+До українського перекладу: https://github.com/basilstotz/ltsp-org-updater/blob/main/README-UA.md
 
 ## Quick Start
 
