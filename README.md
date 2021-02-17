@@ -2,6 +2,8 @@
 
 Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" on a Ubuntu box. It's designed for teachers with no experience on the shell.
 
+До українського перекладу: 
+
 ## Quick Start
 
 - Downlaod the Debian package (https://github.com/basilstotz/ubuntu-ltsp-updater/releases/download/v0.01/ltsp-updater-amd64.deb) and doppleclick on it in order to install the package. You can safely delete the package afterwards.
