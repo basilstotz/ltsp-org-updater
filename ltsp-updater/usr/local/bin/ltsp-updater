@@ -2,37 +2,68 @@
 
 test $(id --user) = 0 || exec sudo $0
 
+LOG="/var/log/ltsp-updater.log"
 
-updater(){
-    if test -z "$(which ltsp)";then
-        if cat /etc/issue|grep -q Debian;then
-            wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
-		-O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
-            wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
-		-O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
-	else
-  	   add-apt-repository ppa:ltsp
-	fi    
-        apt-get --yes update
-        apt-get --yes install cowsay lolcat
-        apt-get --yes install --install-recommends \
-            ltsp ltsp-binaries dnsmasq nfs-kernel-server \
-            openssh-server squashfs-tools ethtool net-tools epoptes
-    fi
+progress(){
+    OLD=$(ls -l /srv/ltsp/images/x86_64.img.old | xargs | cut -d\  -f5)
+    test -n "$OLD" || OLD="2000000000"
+
+    echo "5"
+    while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
+        sleep 5
+    done
+
+    while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
+        NEW=$(ls -l /srv/ltsp/images/x86_64.img.tmp | xargs | cut -d\  -f5)
+        PERCENT=$(( $NEW * 100 / $OLD))
+        test $PERCENT -gt 5 && echo $PERCENT
+        sleep 5
+    done
+
+    echo 100
+}
+
+update(){
     ltsp dnsmasq
     ltsp image /
     ltsp nfs
     ltsp ipxe
     ltsp initrd
-    return $?
 }
 
-success(){
-    for I in $(seq 30);do echo;done    
-    /usr/games/cowsay "LTSP is ready!" | /usr/games/lolcat
-}    
+install_ltsp(){
+    if cat /etc/issue|grep -q Debian;then
+            wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
+		-O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
+            wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
+		-O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+	else
+  	   add-apt-repository --yes ppa:ltsp
+	fi    
+        apt-get --yes update
+        apt-get --yes install --install-recommends ltsp ltsp-binaries 
+}
+
+show_update(){
+    zenity --progress --title="LTSP-Updater"  \
+	   --no-cancel --auto-close
+}
+
+show_install(){
+    zenity --title="LTSP-Installer" --progress \
+	   --pulsate --no-cancel --auto-close
+}
+
+show_success(){
+    zenity --info --title="LTSP-Updater"
+}
 
 
-updater && sucess
-sleep 5
+#main
+echo $(date) > $LOG
+if test -z "$(which ltsp)";then
+    (install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
+fi
+update 2>&1 >> $LOG | progress | show_update 
+show_success
 exit
