@@ -1,17 +1,15 @@
 #!/bin/sh
 
-test $(id --user) = 0 || exec sudo $0
+test "$(id --user)" = 0 || exec sudo "$0"x
 
 LOG="/var/log/ltsp-updater.log"
 
 progress(){
-    OLD=$(ls -l /srv/ltsp/images/x86_64.img.old | xargs | cut -d\  -f5)
+    OLD=$(ls -l /srv/ltsp/images | grep x86_64.img.old | xargs | cut -d\  -f5)
     test -n "$OLD" || OLD="2000000000"
 
     echo "5"
-    while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
-        sleep 5
-    done
+    while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do sleep 5;done
 
     while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
         NEW=$(ls -l /srv/ltsp/images/x86_64.img.tmp | xargs | cut -d\  -f5)
@@ -23,8 +21,7 @@ progress(){
     echo 100
 }
 
-update(){
-    ltsp dnsmasq
+update_ltsp(){
     ltsp image /
     ltsp nfs
     ltsp ipxe
@@ -41,7 +38,8 @@ install_ltsp(){
   	   add-apt-repository --yes ppa:ltsp
 	fi    
         apt-get --yes update
-        apt-get --yes install --install-recommends ltsp ltsp-binaries 
+        apt-get --yes --install-recommends install ltsp ltsp-binaries
+	if $?;then ltsp dnsmasq;fi
 }
 
 show_update(){
@@ -64,6 +62,6 @@ echo $(date) > $LOG
 if test -z "$(which ltsp)";then
     (install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
 fi
-update 2>&1 >> $LOG | progress | show_update 
+update_ltsp 2>&1 >> $LOG | progress | show_update 
 show_success
 exit
