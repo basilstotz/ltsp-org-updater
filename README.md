@@ -8,7 +8,7 @@ Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" 
 - Search for the `LTSP-Updater` application and run it. At first run, it will download and install some additional software. Then it clones the host computer for the clients. This may take a very long time. Consider up to 30 minutes!  
 - Whenever you make changes (install/remove software or add/remove users) run the `LTSP-Updater` again. This may take a very long time. Consider up to 30 minutes! 
 
-## Debian Package:
+## Build Debian Package
 
 ```
 $ git clone https://github.com/basilstotz/ltsp-org-updater
