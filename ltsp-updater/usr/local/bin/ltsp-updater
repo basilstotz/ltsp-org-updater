@@ -7,17 +7,15 @@ LOG="/var/log/ltsp-updater.log"
 progress(){
     OLD=$(ls -l /srv/ltsp/images | grep x86_64.img.old | xargs | cut -d\  -f5)
     test -n "$OLD" || OLD="2000000000"
-
+    
     echo "5"
     while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do sleep 5;done
-
     while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
         NEW=$(ls -l /srv/ltsp/images/x86_64.img.tmp | xargs | cut -d\  -f5)
         PERCENT=$(( $NEW * 100 / $OLD))
         test $PERCENT -gt 5 && echo $PERCENT
         sleep 5
     done
-
     echo 100
 }
 
@@ -30,16 +28,16 @@ update_ltsp(){
 
 install_ltsp(){
     if cat /etc/issue|grep -q Debian;then
-            wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
-		-O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
-            wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
-		-O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
-	else
-  	   add-apt-repository --yes ppa:ltsp
-	fi    
-        apt-get --yes update
-        apt-get --yes --install-recommends install ltsp ltsp-binaries
-	if $?;then ltsp dnsmasq;fi
+       wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
+	    -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
+       wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
+	    -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+    else
+       add-apt-repository --yes ppa:ltsp
+    fi    
+    apt-get --yes update
+    apt-get --yes --install-recommends install ltsp ltsp-binaries
+    if $?;then ltsp dnsmasq;fi
 }
 
 show_update(){
