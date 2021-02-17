@@ -1,6 +1,6 @@
 #!/bin/sh
 
-test "$(id --user)" = 0 || exec sudo "$0"x
+test "$(id --user)" = 0 || exec sudo "$0"
 
 LOG="/var/log/ltsp-updater.log"
 
