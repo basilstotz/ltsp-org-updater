@@ -18,7 +18,9 @@ ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
 EOF
 
 cat <<EOF > /etc/ltsp/add-image.excludes
-ltsp-updater*
+usr/share/applications/ltsp-updater.desktop
+usr/share/pixmaps/ltsp-updater.png
+usr/local/bin/ltsp-updater
 EOF
 
 }
