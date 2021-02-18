@@ -6,7 +6,8 @@ LOG="/var/log/ltsp-updater.log"
 
 
 ltsp_conf(){
-
+    test -f /etc/ltsp/ltsp.conf && return
+    
 cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
 ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
@@ -23,13 +24,13 @@ EOF
 }
 
 progress(){
-    OLD=$(ls -l /srv/ltsp/images | grep x86_64.img.old | xargs | cut -d\  -f5)
+    OLD=$(stat --format=%s /srv/ltsp/images/x86_64.img.old)
     test -n "$OLD" || OLD="2000000000"
     
-    echo "5"
+    echo 5
     while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do sleep 5;done
     while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
-        NEW=$(ls -l /srv/ltsp/images/x86_64.img.tmp | xargs | cut -d\  -f5)
+        NEW=$(stat --format=%s /srv/ltsp/images/x86_64.img.tmp)
         PERCENT=$(( NEW * 100 / OLD ))
         test $PERCENT -gt 5 && echo $PERCENT
         sleep 5
@@ -38,6 +39,7 @@ progress(){
 }
 
 update_ltsp(){
+    ip route|grep -q default  &&  ltsp dnsmasq
     ltsp image /
     ltsp nfs
     ltsp ipxe
@@ -45,8 +47,7 @@ update_ltsp(){
 }
 
 install_ltsp(){
-    #install ltsp
-    if cat /etc/issue|grep -q Debian;then
+    if grep -q Debian /etc/issue;then
        wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
 	    -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
        wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg \
@@ -56,11 +57,7 @@ install_ltsp(){
     fi    
     apt-get --yes update
     apt-get --yes --install-recommends install ltsp ltsp-binaries
-    # do some settings too
-    if $?;then ltsp dnsmasq;fi
-    if ! test -f /etc/ltsp/ltsp.conf;then
-	ltsp_conf
-    fi    
+    ltsp_conf    
 }
 
 show_update(){
@@ -80,7 +77,7 @@ show_success(){
 
 #main
 date > $LOG
-if test -z "$(which ltsp)";then
+if test -z "$(command -v ltsp)";then
     (install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
 fi
 update_ltsp 2>&1 >> $LOG | progress | show_update 
