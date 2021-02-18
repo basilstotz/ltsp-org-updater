@@ -4,6 +4,24 @@ test "$(id --user)" = 0 || exec sudo "$0"
 
 LOG="/var/log/ltsp-updater.log"
 
+
+ltsp_conf(){
+
+cat <<EOF >  /etc/ltsp/ltsp.conf
+[server]
+ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
+[common]
+#GDM3_CONF="WaylandEnable=false"  
+[clients]
+#CRONTAB_x="30 15 * * * poweroff" 
+EOF
+
+cat <<EOF > /etc/ltsp/add-image.excludes
+ltsp-updater*
+EOF
+
+}
+
 progress(){
     OLD=$(ls -l /srv/ltsp/images | grep x86_64.img.old | xargs | cut -d\  -f5)
     test -n "$OLD" || OLD="2000000000"
@@ -12,7 +30,7 @@ progress(){
     while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do sleep 5;done
     while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
         NEW=$(ls -l /srv/ltsp/images/x86_64.img.tmp | xargs | cut -d\  -f5)
-        PERCENT=$(( $NEW * 100 / $OLD))
+        PERCENT=$(( NEW * 100 / OLD ))
         test $PERCENT -gt 5 && echo $PERCENT
         sleep 5
     done
@@ -27,6 +45,7 @@ update_ltsp(){
 }
 
 install_ltsp(){
+    #install ltsp
     if cat /etc/issue|grep -q Debian;then
        wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list \
 	    -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
@@ -37,7 +56,11 @@ install_ltsp(){
     fi    
     apt-get --yes update
     apt-get --yes --install-recommends install ltsp ltsp-binaries
+    # do some settings too
     if $?;then ltsp dnsmasq;fi
+    if ! test -f /etc/ltsp/ltsp.conf;then
+	ltsp_conf
+    fi    
 }
 
 show_update(){
@@ -56,7 +79,7 @@ show_success(){
 
 
 #main
-echo $(date) > $LOG
+date > $LOG
 if test -z "$(which ltsp)";then
     (install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
 fi

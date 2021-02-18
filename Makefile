@@ -5,5 +5,5 @@ package:
 
 .PHONY: install
 install: package
-	@find . -name ltsp-updater_\*_amd64.deb -exec dpkg -i \{\} \;
+	@sudo find . -name ltsp-updater_\*_amd64.deb -exec dpkg -i \{\} \;
 
