@@ -41,11 +41,17 @@ progress(){
 }
 
 update_ltsp(){
+    sleep 1
     ip route|grep -q default  &&  ltsp dnsmasq
+    sleep 1
     ltsp image /
+    sleep 1
     ltsp nfs
+    sleep 1
     ltsp ipxe
+    sleep 1
     ltsp initrd
+    sleep 1
 }
 
 install_ltsp(){
