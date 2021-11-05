@@ -12,9 +12,9 @@ Maintainer: Basil Stotz <stotz@amxa.ch>
 Package: $NAME
 Version: $VERSION 
 Architecture: amd64
-Depends: debconf, zenity, lxqt-sudo, dnsmasq, nfs-kernel-server, openssh-server, squashfs-tools, ethtool, net-tools, epoptes, epoptes-client, sshfs, man-db
-Description: Setup and maintain a LTSP server on ubuntu
- Setup and maintain a LTSP server on ubuntu
+Depends: debconf, zenity, lxqt-sudo, dnsmasq, nfs-kernel-server, openssh-server, squashfs-tools, ethtool, net-tools, epoptes, epoptes-client, sshfs, man-db, wget
+Description: Setup and maintain a LTSP server on ubuntu/debian
+ Setup and maintain a LTSP server on ubuntu/debian
 EOF
 
 cat <<EOF > $NAME/DEBIAN/copyright
