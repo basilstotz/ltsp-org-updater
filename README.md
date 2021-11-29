@@ -6,7 +6,17 @@ Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" 
 
 # LTSP Network Setup
 
-![image](https://user-images.githubusercontent.com/3853260/143923274-1ff26b7d-ec3b-4f7d-ac6b-9ed2d8d1e126.png)
+This manual assumes you have this (typical home or small office) setup: 
+
+![network-1](https://user-images.githubusercontent.com/3853260/143925099-8ea63fc5-d756-4987-b090-3140dc4e5519.png)
+
+* The LTSP-Server (the computer with the LTSP-Updater App) and any number of LTSP-Clients are connected to the network just like the normal client would be connected.
+*  
+
+
+![network-2](https://user-images.githubusercontent.com/3853260/143925125-dbddc292-9137-4aa9-a658-dfa9f720eb42.png)
+
+
 
 
 ## Quick Start
