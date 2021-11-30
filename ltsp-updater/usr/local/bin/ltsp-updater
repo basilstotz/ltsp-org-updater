@@ -21,6 +21,8 @@ cat <<EOF > /etc/ltsp/add-image.excludes
 usr/share/applications/ltsp-updater.desktop
 usr/share/pixmaps/ltsp-updater.png
 usr/local/bin/ltsp-updater
+usr/share/applications/org.gnome.Software.desktop
+usr/bin/gnome-software
 EOF
 
 }
