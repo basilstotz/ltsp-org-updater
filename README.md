@@ -5,7 +5,9 @@ Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" 
 До українського перекладу: https://github.com/basilstotz/ltsp-org-updater/blob/main/README-UA.md
 
 
+# Introduction
 
+LTSP is an easy way to manage any amount of students computers with a minimum effort. You only have to mange one sample computer, the so called LTSP-Server. All other computers are clones of this LTSP-Server. They need no maintainence at all. 
 
 # LTSP Network Setup
 
@@ -20,7 +22,12 @@ The LTSP-Server (the computer with the LTSP-Updater App) and any number of LTSP-
 
 # LTSP-Server
 
+The LTSP-Server is a vanilla Ubuntu installation, where the Package ltsp-org-updater is installed.
 
+
+# LTSP-Clients
+
+You can use any computer (even without harddisk) as an LTSP-Client. The thing you have to do is setting the BIOS bootorder to *network boot* or *PXE-Boot*.
 
 
 
