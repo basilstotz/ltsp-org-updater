@@ -42,6 +42,7 @@ Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" 
 
 ```
 $ git clone https://github.com/basilstotz/ltsp-org-updater
+$ cd ltsp-org-updater
 $ make
 ```
 
