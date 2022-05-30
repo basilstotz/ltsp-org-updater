@@ -3,7 +3,9 @@
 
 # Introduction  to LTSP
 
-LTSP is an easy way to manage any amount of students computers with a minimum effort. You only have to mange one sample computer, the so called LTSP-Server. All other computers are clones of this LTSP-Server. They need no maintainence at all. 
+LTSP is an easy way to manage any amount of students computers with a minimum effort. 
+- You only have to mange one sample computer, the so called **LTSP-Server**. On this computer you can add/remove user, install/remove programms as you like, just you would do with an 'normal' Ubuntu.
+- All other computers, the so called **LTSP-Clients**, are always automatically exact clones of this LTSP-Server. They need no maintainence at all. 
 
 ## LTSP Network Setup
 
