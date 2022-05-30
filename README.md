@@ -23,7 +23,9 @@ The LTSP-Server is a vanilla Ubuntu installation, where the Package ltsp-org-upd
 
 ## LTSP-Clients
 
-You can use any computer (even without harddisk) as an LTSP-Client. The thing you have to do is setting the BIOS bootorder to *network boot* or *PXE-Boot*.
+You can use any number(ok, maybe up to 50 or so) with any computers (even without harddisk) as an LTSP-Clients. The only thing you have to do is setting the BIOS bootorder to *network boot* or *PXE-Boot*.
+
+Remember: You don't have to install anything on the clients, just setting the boot order to PXE-Boot is realy enough! All the clients are always the same a the main server.
 
 
 # ltsp-org-updater
