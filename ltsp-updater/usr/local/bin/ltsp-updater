@@ -2,6 +2,14 @@
 
 test "$(id --user)" = 0 || exec sudo "$0"
 
+if test "$1" = "--zenity" ;then
+    ZENITY=true;
+else
+    ZENITY=false;
+fi
+
+
+
 LOG="/var/log/ltsp-updater.log"
 
 
@@ -86,10 +94,19 @@ show_success(){
 
 
 #main
-date > $LOG
-if test -z "$(command -v ltsp)";then
-    (install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
+
+if $ZENITY; then
+    date > $LOG
+    if test -z "$(command -v ltsp)";then
+	(install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
+    fi
+    update_ltsp 2>&1 >> $LOG | progress | show_update 
+    show_success
+else
+    if test -z "$(command -v ltsp)";then
+	install_ltsp  
+    fi
+    update_ltsp 
 fi
-update_ltsp 2>&1 >> $LOG | progress | show_update 
-show_success
+
 exit
