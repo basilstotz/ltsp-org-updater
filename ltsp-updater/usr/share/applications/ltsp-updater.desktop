@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=LTSP-Updater
 Comment=Update a LTSP-Server 
-Exec=lxqt-sudo ltsp-updater --zenity
+Exec=lxqt-sudo ltsp-updater --gui
 Terminal=false
 Type=Application
 Icon=ltsp-updater.png

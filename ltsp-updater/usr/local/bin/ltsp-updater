@@ -2,17 +2,6 @@
 
 test "$(id --user)" = 0 || exec sudo "$0"
 
-if test "$1" = "--zenity" ;then
-    ZENITY=true;
-else
-    ZENITY=false;
-fi
-
-
-
-LOG="/var/log/ltsp-updater.log"
-
-
 ltsp_conf(){
     test -f /etc/ltsp/ltsp.conf && return
     
@@ -94,8 +83,14 @@ show_success(){
 
 
 #main
+if test "$1" = "--gui" ;then
+    GUI=true;
+else
+    GUI=false;
+fi
 
-if $ZENITY; then
+if $GUI; then
+    LOG="/var/log/ltsp-updater.log"
     date > $LOG
     if test -z "$(command -v ltsp)";then
 	(install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
