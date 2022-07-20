@@ -24,7 +24,7 @@ set -e
 
 case "$1" in
     configure)
-       systemctl enable ltsp-updater.service
+       systemctl enable ltsp-org-updater.service
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
