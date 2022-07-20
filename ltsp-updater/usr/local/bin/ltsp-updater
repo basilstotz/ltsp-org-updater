@@ -106,6 +106,7 @@ if test "$1" = "--install" ;then
     if test -z "$(command -v ltsp)";then
 	install_ltsp 
     fi
+    exit $?
 fi
 
 
