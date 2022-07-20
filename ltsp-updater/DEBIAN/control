@@ -3,7 +3,7 @@ Section: unknown
 Priority: extra
 Maintainer: Basil Stotz <stotz@amxa.ch>
 Package: ltsp-updater
-Version: 1658325249 
+Version: 1658326390 
 Architecture: amd64
 Depends: debconf, zenity, lxqt-sudo, dnsmasq, nfs-kernel-server, openssh-server, squashfs-tools, ethtool, net-tools, epoptes, epoptes-client, sshfs, man-db, wget
 Description: Setup and maintain a LTSP server on ubuntu/debian
