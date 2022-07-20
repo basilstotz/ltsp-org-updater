@@ -86,10 +86,12 @@ show_success(){
 
 #main
 if test  "$1" = "--systemd"; then
-    while ! nm-online -t 3600; do
-	true
-    done
-    update_config
+    if test -f /srv/ltsp/images/x86_64.img; then
+	while ! nm-online -t 3600; do
+	    true
+	done
+	update_config
+    fi
     sleep infinity
 fi
 

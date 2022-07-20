@@ -1,0 +1,8 @@
+[Unit]
+Description=Configure LTSP-Server
+
+[Service]
+ExecStart=/usr/local/bin/ltsp-updater --systemd
+
+[Install]
+WantedBy=multi-user.target
