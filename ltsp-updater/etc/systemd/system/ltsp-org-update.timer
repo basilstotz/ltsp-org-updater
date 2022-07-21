@@ -3,7 +3,7 @@ Description=Updates LTSP-Image
 Requires=ltsp-org-image.service
 
 [Timer]
-Unit=ltsp-org-image.service
+Unit=ltsp-org-update.service
 OnCalendar=weekdays 23:23:30
 
 [Install]
