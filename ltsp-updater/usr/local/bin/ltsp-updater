@@ -99,7 +99,14 @@ if test  "$1" = "--update"; then
     if test -f /srv/ltsp/images/x86_64.img; then
        update_image
     fi
-    exit $?
+    exit 0
+fi
+
+if test "$1" = "--install" ;then
+    if test -z "$(command -v ltsp)";then
+	install_ltsp 
+    fi
+    exit 0
 fi
 
 
@@ -110,15 +117,6 @@ if test "$1" = "--gui" ;then
 else
     GUI=false;
 fi
-
-if test "$1" = "--install" ;then
-    if test -z "$(command -v ltsp)";then
-	install_ltsp 
-    fi
-    exit $?
-fi
-
-
 
 if $GUI; then
     LOG="/var/log/ltsp-updater.log"
