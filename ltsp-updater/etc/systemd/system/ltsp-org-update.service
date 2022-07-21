@@ -3,7 +3,7 @@ Description=Update Image
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/bin/ltsp-updater
+ExecStart=/usr/local/bin/ltsp-updater --image
 
 [Install]
 WantedBy=multi-user.target

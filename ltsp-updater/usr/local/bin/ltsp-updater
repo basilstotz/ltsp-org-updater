@@ -85,7 +85,7 @@ show_success(){
 
 
 #main
-if test  "$1" = "--systemd"; then
+if test  "$1" = "--config"; then
     if test -f /srv/ltsp/images/x86_64.img; then
 	while ! nm-online -t 3600; do
 	    true
@@ -94,6 +94,15 @@ if test  "$1" = "--systemd"; then
     fi
     sleep infinity
 fi
+
+if test  "$1" = "--update"; then
+    if test -f /srv/ltsp/images/x86_64.img; then
+       update_image
+    fi
+    exit $?
+fi
+
+
 
 
 if test "$1" = "--gui" ;then
