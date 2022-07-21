@@ -1,0 +1,10 @@
+[Unit]
+Description=Updates LTSP-Image
+Requires=ltsp-org-image.service
+
+[Timer]
+Unit=ltsp-org-image.service
+OnCalendar=weekdays 23:23:30
+
+[Install]
+WantedBy=timers.target

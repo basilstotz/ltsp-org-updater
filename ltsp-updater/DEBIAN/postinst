@@ -24,7 +24,8 @@ set -e
 
 case "$1" in
     configure)
-       systemctl enable ltsp-org-updater.service
+	systemctl enable ltsp-org-config.service
+	systemctl enable ltsp-org-image.timer
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
