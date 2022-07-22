@@ -3,8 +3,8 @@ Description=Updates LTSP-Image
 Requires=ltsp-org-image.service
 
 [Timer]
-Unit=ltsp-org-update.service
-OnCalendar=weekdays 23:23:30
+Unit=ltsp-org-image.service
+OnCalendar=Mon..Fri *-*-*  23:23:30
 
 [Install]
 WantedBy=timers.target

@@ -31,7 +31,7 @@ case "$1" in
            add-apt-repository --yes ppa:ltsp
         fi    
 	systemctl enable ltsp-org-config.service
-	systemctl enable ltsp-org-update.timer
+	systemctl enable ltsp-org-image.timer
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

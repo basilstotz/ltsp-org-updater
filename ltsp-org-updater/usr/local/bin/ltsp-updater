@@ -48,13 +48,13 @@ install_ltsp(){
 # for zenity
 progress(){
     OLD=$(stat --format=%s /srv/ltsp/images/x86_64.img.old)
-    test -n "$OLD" || OLD="2000000000"
+    test -n "$OLD" || OLD="4000000000"
     
     echo 5
     while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do sleep 5;done
     while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
         NEW=$(stat --format=%s /srv/ltsp/images/x86_64.img.tmp)
-        PERCENT=$(( NEW * 100 / OLD ))
+        PERCENT=$(( NEW * 95 / OLD ))
         test $PERCENT -gt 5 && echo $PERCENT
         sleep 5
     done
@@ -77,7 +77,7 @@ show_success(){
 
 
 #main
-if test  "$1" = "--config"; then
+if test  "$1" = "--systemd"; then
     if test -f /srv/ltsp/images/x86_64.img; then
 	while ! nm-online -t 3600; do
 	    true
