@@ -3,7 +3,7 @@ Section: unknown
 Priority: extra
 Maintainer: Basil Stotz <stotz@amxa.ch>
 Package: ltsp-org-updater
-Version: 1658477045 
+Version: 1658496052 
 Architecture: amd64
 Depends: 
 Description: Setup and maintain a LTSP server on ubuntu/debian
