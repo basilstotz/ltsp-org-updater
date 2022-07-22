@@ -1,6 +1,6 @@
 #!/bin/sh
 
-NAME="ltsp-updater"
+NAME="ltsp-org-updater"
 VERSION=$(date +%s)
 
 test -d $NAME/DEBIAN || mkdir -p $NAME/DEBIAN
