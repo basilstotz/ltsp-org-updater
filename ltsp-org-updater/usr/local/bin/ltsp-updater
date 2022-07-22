@@ -40,6 +40,13 @@ update_image(){
 
 
 install_ltsp(){
+    if grep -q Debian /etc/issue;then
+       wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
+       wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+    else
+       add-apt-repository --yes ppa:ltsp
+    fi    
+
     apt-get --yes update
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
@@ -87,7 +94,7 @@ if test  "$1" = "--systemd"; then
     sleep infinity
 fi
 
-if test  "$1" = "--update"; then
+if test  "$1" = "--image"; then
     if test -f /srv/ltsp/images/x86_64.img; then
        update_image
     fi
