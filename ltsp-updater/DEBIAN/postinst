@@ -24,6 +24,12 @@ set -e
 
 case "$1" in
     configure)
+        if grep -q Debian /etc/issue;then
+           wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
+           wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+        else
+           add-apt-repository --yes ppa:ltsp
+        fi    
 	systemctl enable ltsp-org-config.service
 	systemctl enable ltsp-org-update.timer
     ;;

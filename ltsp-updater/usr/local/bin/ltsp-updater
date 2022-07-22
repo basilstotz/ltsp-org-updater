@@ -112,10 +112,10 @@ fi
 
 
 
-if test "$1" = "--gui" ;then
-    GUI=true;
-else
+if test "$1" = "--nogui" ;then
     GUI=false;
+else
+    GUI=true;
 fi
 
 if $GUI; then
