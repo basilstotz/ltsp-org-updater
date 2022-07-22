@@ -2,7 +2,7 @@
 Description=Configure LTSP-Server
 
 [Service]
-ExecStart=/usr/local/bin/ltsp-updater --systemd
+ExecStart=/usr/local/bin/ltsp-org-updater --daemon
 
 [Install]
 WantedBy=multi-user.target

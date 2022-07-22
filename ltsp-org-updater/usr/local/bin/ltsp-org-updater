@@ -26,6 +26,19 @@ EOF
 
 }
 
+install_ltsp(){
+    if grep -q Debian /etc/issue;then
+       wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
+       wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+    else
+       add-apt-repository --yes ppa:ltsp
+    fi    
+
+    apt-get --yes update
+    apt-get --yes --install-recommends install ltsp ltsp-binaries
+    ltsp_prepare
+}
+
 update_config(){
     ip route|grep -q default  &&  ltsp dnsmasq
     ltsp nfs
@@ -39,18 +52,38 @@ update_image(){
 }
 
 
-install_ltsp(){
-    if grep -q Debian /etc/issue;then
-       wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
-       wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
-    else
-       add-apt-repository --yes ppa:ltsp
-    fi    
 
-    apt-get --yes update
-    apt-get --yes --install-recommends install ltsp ltsp-binaries
-    ltsp_prepare
-}
+#main
+if test  "$1" = "--daemon"; then
+     if test -f /srv/ltsp/images/x86_64.img; then
+	while ! nm-online -t 3600; do
+	    true
+	done
+	update_config
+    fi
+    sleep infinity
+fi
+
+if test "$1" = "--install" ;then
+	install_ltsp 
+        update_image
+        exit 0
+fi
+
+if test -f /srv/ltsp/images/x86_64.img; then
+   update_image
+fi
+
+exit 0
+
+
+
+
+
+
+
+
+#######################################################################
 
 # for zenity
 progress(){
@@ -82,35 +115,7 @@ show_success(){
     zenity --info --title="LTSP-Updater"
 }
 
-
-#main
-if test  "$1" = "--systemd"; then
-    if test -f /srv/ltsp/images/x86_64.img; then
-	while ! nm-online -t 3600; do
-	    true
-	done
-	update_config
-    fi
-    sleep infinity
-fi
-
-if test  "$1" = "--image"; then
-    if test -f /srv/ltsp/images/x86_64.img; then
-       update_image
-    fi
-    exit 0
-fi
-
-if test "$1" = "--install" ;then
-    if test -z "$(command -v ltsp)";then
-	install_ltsp 
-    fi
-    exit 0
-fi
-
-
-
-
+# old main
 if test "$1" = "--nogui" ;then
     GUI=false;
 else

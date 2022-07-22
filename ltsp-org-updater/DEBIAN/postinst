@@ -25,8 +25,11 @@ set -e
 case "$1" in
     configure)
 	systemctl enable ltsp-org-config.service
-	systemctl enable ltsp-org-image.timer
 	systemctl disable ltsp-org-image.service
+	#systemd starts also at boot!
+	#systemctl enable ltsp-org-image.timer
+
+	echo "23 23 * * 1-5 root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
