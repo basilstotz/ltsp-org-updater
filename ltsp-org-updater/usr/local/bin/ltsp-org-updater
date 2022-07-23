@@ -70,6 +70,14 @@ if test "$1" = "--install" ;then
         exit 0
 fi
 
+if test "$1" = "--image";then
+    UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
+    if "$UPTIME" -lt 120; then
+	exit 0
+    fi
+fi
+
+
 if test -f /srv/ltsp/images/x86_64.img; then
    update_image
 fi
