@@ -2,6 +2,9 @@
 
 test "$(id --user)" = 0 || exec sudo $0 $@
 
+PFAD="/srv/ltsp/images"
+
+echo $0 $@
 
 #ltsp
 ltsp_prepare(){
@@ -41,54 +44,65 @@ install_ltsp(){
 update_config(){
     ip route|grep -q default  &&  ltsp dnsmasq
     ltsp nfs
-    ltsp kernel
+    for I in $(ls $PFAD/*.img);do
+	BI=$(basename -s .img $I)
+	if "$BI" = "lernstick";then
+	    ltsp kernel $BI --kernel-initrd="live/vmlinuz* s|vmlinuz|initrd.img|"
+
+	else
+	    ltsp kernel $BI
+	fi
+    done
     ltsp initrd
     ltsp ipxe
 }
 
 update_image(){
     ltsp image /
-    update_config
 }
 
 
-
 #main
-if test  "$1" = "--daemon"; then
-     if test -f /srv/ltsp/images/x86_64.img; then
-	while ! nm-online -t 3600; do
-	    true
-	done
-	update_config
-    fi
-    sleep infinity
+if test "$1" = "--install" -o -n "$(command -v ltsp)";then
+    case "$1" in
+	 #systemd
+	 --daemon)
+	     while ! nm-online -t 3600; do
+		 true
+	     done
+	     update_config
+	     sleep infinity
+	     ;;
+	 --update-image)
+	     UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
+	     if test "$UPTIME" -gt 120 -a -f $PFAD/x86_64.img; then
+		 update_image
+		 update_config
+	     fi
+	     ;;
+	 #user
+	 --install)
+	     install_ltsp
+	     ;;
+	 --config)
+	     update_config
+	     ;;
+	 --image)
+ 	     update_image
+	     update_config
+	     ;;
+	 --lernstick)
+	     if wget -C -O $PFAD/lernstick.img.tmp https://releases.lernstick.ch/lernstick_debian11_latest.iso;then
+		 mv $PFAD/lernstick.img.tmp $PFAD/lernstick.img
+		 update_config
+	     fi
+	     ;;
+	 *)
+	     echo "usage $(basename $0) --install | --config | --image | --lernstick"
+	     ;;
+     esac
 fi
-
-if test "$1" = "--config" ;then
-        update_config
-        exit 0
-fi
-
-if test "$1" = "--install" ;then
-	install_ltsp 
-        update_image
-        exit 0
-fi
-
-if test "$1" = "--image";then
-    UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
-    if "$UPTIME" -lt 120; then
-	exit 0
-    fi
-fi
-
-if test -f /srv/ltsp/images/x86_64.img; then
-   update_image
-fi
-
-exit 0
-
-
+exit
 
 
 
