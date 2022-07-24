@@ -17,9 +17,7 @@ ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
 EOF
 
 cat <<EOF > /etc/ltsp/add-image.excludes
-usr/share/applications/ltsp-updater.desktop
-usr/share/pixmaps/ltsp-updater.png
-usr/local/bin/ltsp-updater
+usr/local/bin/ltsp-org-updater
 usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
@@ -35,6 +33,7 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
+    apt-get --yes install debconf, zenity, dnsmasq, nfs-kernel-server, openssh-server, squashfs-tools, ethtool, net-tools, epoptes, epoptes-client, sshfs, man-db, wget 
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
 }
@@ -44,6 +43,7 @@ update_config(){
     ltsp nfs
     ltsp ipxe
     ltsp initrd
+    ltsp kernel
 }
 
 update_image(){
@@ -64,6 +64,11 @@ if test  "$1" = "--daemon"; then
     sleep infinity
 fi
 
+if test "$1" = "--config" ;then
+        update_config
+        exit 0
+fi
+
 if test "$1" = "--install" ;then
 	install_ltsp 
         update_image
@@ -76,7 +81,6 @@ if test "$1" = "--image";then
 	exit 0
     fi
 fi
-
 
 if test -f /srv/ltsp/images/x86_64.img; then
    update_image
