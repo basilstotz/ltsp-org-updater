@@ -41,9 +41,9 @@ install_ltsp(){
 update_config(){
     ip route|grep -q default  &&  ltsp dnsmasq
     ltsp nfs
-    ltsp ipxe
-    ltsp initrd
     ltsp kernel
+    ltsp initrd
+    ltsp ipxe
 }
 
 update_image(){
