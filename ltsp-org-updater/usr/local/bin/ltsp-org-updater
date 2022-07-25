@@ -59,6 +59,37 @@ update_config(){
 
 update_image(){
     ltsp image /
+    update_config
+}
+
+update_lernstick(){
+    mkdir -p /srv/iso/
+    cd /srv/iso
+    URL="https://releases.lernstick.ch"
+    NAME="lernstick_debian11_latest"
+    test -f $NAME.iso.md5 || touch $NAME.iso.md5
+    if wget -O $NAME.iso.md5.tmp $URL/$NAME.iso.md5 2>/dev/null;then
+	if ! diff $NAME.iso.md5 $NAME.iso.md5.tmp >/dev/null;then
+	    if wget -c -O $NAME.iso.tmp $URL/$NAME.iso ;then
+		#we have a new image!
+		mv $NAME.iso.md5.tmp $NAME.iso.md5
+		REALNAME=$(cat $NAME.iso.md5|xargs|cut -d" " -f2)
+		mv $NAME.iso.tmp $REALNAME
+		test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
+		ln $REALNAME ../ltsp/images/lernstick.img
+		update_config
+		# purge old images
+		find . -name lernstick*.iso -mtime +365 -exec rm \{\} \;
+	    else
+		echo "error: could not downlaod $NAME.iso"
+	    fi
+	else
+	    rm $NAME.iso.md5.tmp
+	    echo "info: $NAME.iso is up to date. do nothing"
+	fi
+    else
+	echo "error: could not download $NAME.iso.md5"
+    fi
 }
 
 
@@ -73,11 +104,15 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 	     update_config
 	     sleep infinity
 	     ;;
-	 --update-image)
+	 --update)
 	     UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
-	     if test "$UPTIME" -gt 120 -a -f $PFAD/x86_64.img; then
-		 update_image
-		 update_config
+	     if test "$UPTIME" -gt 120;then
+		 if test -f $PFAD/x86_64.img; then
+		     update_image
+		 fi
+		 if test -f $PFAD/lernstick.img;then
+		     update_lernstick
+		 fi
 	     fi
 	     ;;
 	 #user
@@ -89,13 +124,9 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 	     ;;
 	 --image)
  	     update_image
-	     update_config
 	     ;;
 	 --lernstick)
-	     if wget -C -O $PFAD/lernstick.img.tmp https://releases.lernstick.ch/lernstick_debian11_latest.iso;then
-		 mv $PFAD/lernstick.img.tmp $PFAD/lernstick.img
-		 update_config
-	     fi
+	     update_lernstick
 	     ;;
 	 *)
 	     echo "usage $(basename $0) --install | --config | --image | --lernstick"
