@@ -62,7 +62,7 @@ update_config(){
     ltsp nfs
     for I in $(ls $PFAD/*.img);do
 	BI=$(basename -s .img $I)
-	if "$BI" = "lernstick";then
+	if test "$BI" = "lernstick";then
 	    ltsp kernel $BI --kernel-initrd="live/vmlinuz* s|vmlinuz|initrd.img|"
 
 	else
@@ -150,65 +150,4 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 	     ;;
      esac
 fi
-exit
-
-
-
-
-
-
-#######################################################################
-
-# for zenity
-progress(){
-    OLD=$(stat --format=%s /srv/ltsp/images/x86_64.img.old)
-    test -n "$OLD" || OLD="4000000000"
-    
-    echo 5
-    while test -z "$(find /srv/ltsp/images -name x86_64.img.tmp)";do sleep 5;done
-    while test -n "$(find /srv/ltsp/images -name x86_64.img.tmp)";do
-        NEW=$(stat --format=%s /srv/ltsp/images/x86_64.img.tmp)
-        PERCENT=$(( NEW * 95 / OLD ))
-        test $PERCENT -gt 5 && echo $PERCENT
-        sleep 5
-    done
-    echo 100
-}
-
-show_update(){
-    zenity --progress --title="LTSP-Updater"  \
-	   --no-cancel --auto-close
-}
-
-show_install(){
-    zenity --title="LTSP-Installer" --progress \
-	   --pulsate --no-cancel --auto-close
-}
-
-show_success(){
-    zenity --info --title="LTSP-Updater"
-}
-
-# old main
-if test "$1" = "--nogui" ;then
-    GUI=false;
-else
-    GUI=true;
-fi
-
-if $GUI; then
-    LOG="/var/log/ltsp-updater.log"
-    date > $LOG
-    if test -z "$(command -v ltsp)";then
-	(install_ltsp 2>&1 >> $LOG;echo "100") | show_install 
-    fi
-    update_image 2>&1 >> $LOG | progress | show_update 
-    show_success
-else
-    if test -z "$(command -v ltsp)";then
-	install_ltsp  
-    fi
-    update_image
-fi
-
 exit
