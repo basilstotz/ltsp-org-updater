@@ -45,14 +45,14 @@ chmod +x /etc/ltsp/set-locale.sh
 
 install_ltsp(){
     if grep -q Debian /etc/issue;then
-       wget https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list -O /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list
-       wget https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  -O /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg
+       curl -s -o /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list 
+       curl -s -o /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  
     else
        add-apt-repository --yes ppa:ltsp
     fi    
 
     apt-get --yes update
-    apt-get --yes install debconf, zenity, dnsmasq, nfs-kernel-server, openssh-server, squashfs-tools, ethtool, net-tools, epoptes, epoptes-client, sshfs, man-db, wget 
+    apt-get --yes install debconf, dnsmasq, nfs-kernel-server, openssh-server, squashfs-tools, ethtool, net-tools, epoptes, epoptes-client, sshfs, man-db
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
 }
@@ -80,6 +80,7 @@ update_image(){
 
 update_lernstick(){
     mkdir -p /srv/iso/
+    mkdir -p /srv/ltsp/images/
     cd /srv/iso
     URL="https://releases.lernstick.ch"
     NAME="lernstick_debian11_latest"
