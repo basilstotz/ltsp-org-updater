@@ -52,7 +52,7 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
-    apt-get --yes install debconf dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db
+    apt-get --yes install debconf dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
 }
