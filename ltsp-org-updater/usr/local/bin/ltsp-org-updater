@@ -13,10 +13,12 @@ ltsp_prepare(){
 cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
 ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
+KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us"
 [common]
 #GDM3_CONF="WaylandEnable=false"  
 [clients]
-#CRONTAB_x="30 15 * * * poweroff" 
+#CRONTAB_x="30 15 * * * poweroff"
+POST_INIT_SET_LOCALE="/etc/ltsp/set-locale.sh" 
 EOF
 
 cat <<EOF > /etc/ltsp/add-image.excludes
@@ -24,6 +26,20 @@ usr/local/bin/ltsp-org-updater
 usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
+
+cat <<EOF > /etc/ltsp/set-locale.sh
+#!/bin/sh
+LOCALE=""
+for P in $(cat /proc/cmdline); do
+    if echo $P | grep -q locales; then
+	LOCALE="LANG=$(echo $P|cut -d= -f2)"
+    fi
+done
+if test -n "$LOCALE";then
+    echo $LOCALE > /etc/default/locale
+fi
+EOF
+chmod +x /etc/ltsp/set-locale.sh
 
 }
 
