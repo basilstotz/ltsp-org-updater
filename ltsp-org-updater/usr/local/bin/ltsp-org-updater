@@ -38,7 +38,7 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
-    for P in md5sum debconf dnsmasq nfs-kernel-server ssh openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
+    for P in debconf dnsmasq nfs-kernel-server ssh squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
 	echo "===================== $P =========================================="
 	apt-get --yes install $P
     done
