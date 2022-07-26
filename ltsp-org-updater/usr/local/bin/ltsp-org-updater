@@ -38,7 +38,10 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
-    apt-get --yes install md5sum debconf dnsmasq nfs-kernel-server ssh openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget
+    for P in md5sum debconf dnsmasq nfs-kernel-server ssh openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
+	echo "===================== $P =========================================="
+	apt-get --yes install $P
+    done
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
 }
