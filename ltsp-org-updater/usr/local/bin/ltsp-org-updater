@@ -13,11 +13,12 @@ ltsp_prepare(){
 [server]
 ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
 KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us timezone='Europe/Zurich' "
+#DEFAULT_IMAGE="x86_64"
 [common]
 #GDM3_CONF="WaylandEnable=false"  
 [clients]
 #CRONTAB_x="30 15 * * * poweroff"
-POST_INIT_SET_LOCALE="/etc/ltsp/set-locale.sh" 
+POST_INIT_SET_LOCALE="/etc/ltsp/set-locales.sh" 
 EOF
 
     cat <<EOF > /etc/ltsp/add-image.excludes
@@ -26,19 +27,6 @@ usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
 
-    cat <<EOF > /etc/ltsp/set-locale.sh
-#!/bin/sh
-LOCALE=""
-for P in $(cat /proc/cmdline); do
-    if echo $P | grep -q locales; then
-	LOCALE="$(echo $P|cut -d= -f2)"
-    fi
-done
-if test -n "$LOCALE";then
-    echo "LANG=$LOCALE" > /etc/default/locale
-fi
-EOF
-    chmod +x /etc/ltsp/set-locale.sh
 }
 
 install_ltsp(){
@@ -50,7 +38,7 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
-    apt-get --yes install md5sum debconf dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget
+    apt-get --yes install md5sum debconf dnsmasq nfs-kernel-server ssh openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
 }
