@@ -4,13 +4,12 @@ test "$(id --user)" = 0 || exec sudo $0 $@
 
 PFAD="/srv/ltsp/images"
 
-echo $0 $@
 
 #ltsp
 ltsp_prepare(){
     test -f /etc/ltsp/ltsp.conf && return
     
-cat <<EOF >  /etc/ltsp/ltsp.conf
+    cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
 ADD_IMAGE_EXCLUDES="/etc/ltsp/add-image.excludes"
 KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us"
@@ -21,26 +20,25 @@ KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us"
 POST_INIT_SET_LOCALE="/etc/ltsp/set-locale.sh" 
 EOF
 
-cat <<EOF > /etc/ltsp/add-image.excludes
+    cat <<EOF > /etc/ltsp/add-image.excludes
 usr/local/bin/ltsp-org-updater
 usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
 
-cat <<EOF > /etc/ltsp/set-locale.sh
+    cat <<EOF > /etc/ltsp/set-locale.sh
 #!/bin/sh
 LOCALE=""
 for P in $(cat /proc/cmdline); do
     if echo $P | grep -q locales; then
-	LOCALE="LANG=$(echo $P|cut -d= -f2)"
+	LOCALE="$(echo $P|cut -d= -f2)"
     fi
 done
 if test -n "$LOCALE";then
-    echo $LOCALE > /etc/default/locale
+    echo "LANG=$LOCALE" > /etc/default/locale
 fi
 EOF
-chmod +x /etc/ltsp/set-locale.sh
-
+    chmod +x /etc/ltsp/set-locale.sh
 }
 
 install_ltsp(){
@@ -52,7 +50,7 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
-    apt-get --yes install debconf dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget
+    apt-get --yes install md5sum debconf dnsmasq nfs-kernel-server openssh-server squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
 }
@@ -92,17 +90,25 @@ update_lernstick(){
 		mv $NAME.iso.md5.tmp $NAME.iso.md5
 		REALNAME=$(cat $NAME.iso.md5|xargs|cut -d" " -f2)
 		mv $NAME.iso.tmp $REALNAME
-		test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
-		ln $REALNAME ../ltsp/images/lernstick.img
-		update_config
+		if md5sum -c $NAME.iso.md5; then
+		    #ok, install it
+		    test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
+		    ln $REALNAME ../ltsp/images/lernstick.img
+		    update_config
+		    echo "info: succesfully downloaded and installed $REALNAME"
+		else
+		    echo "error: md5sum did not match. purge downloaded files"
+		    rm $REALNAME
+		    rm $NAME.iso.md5
+		fi
 		# purge old images
 		find . -name lernstick*.iso -mtime +365 -exec rm \{\} \;
 	    else
-		echo "error: could not downlaod $NAME.iso"
+		echo "error: could not download $NAME.iso"
 	    fi
 	else
 	    rm $NAME.iso.md5.tmp
-	    echo "info: $NAME.iso is up to date. do nothing"
+	    echo "info: all is up to date. do nothing"
 	fi
     else
 	echo "error: could not download $NAME.iso.md5"
@@ -119,7 +125,6 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 		 true
 	     done
 	     update_config
-	     sleep infinity
 	     ;;
 	 --update)
 	     UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
@@ -129,7 +134,7 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 		 fi
 		 if test -f $PFAD/lernstick.img;then
 		     update_lernstick
-		 fi
+		 fi 
 	     fi
 	     ;;
 	 #user

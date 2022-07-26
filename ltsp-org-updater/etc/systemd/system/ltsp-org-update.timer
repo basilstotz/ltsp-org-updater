@@ -1,9 +1,9 @@
 [Unit]
 Description=Updates LTSP-Image
-Requires=ltsp-org-image.service
+Requires=ltsp-org-update.service
 
 [Timer]
-Unit=ltsp-org-image.service
+Unit=ltsp-org-update.service
 OnCalendar=Mon..Fri *-*-*  23:23:30
 
 [Install]

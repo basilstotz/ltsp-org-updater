@@ -2,6 +2,7 @@
 Description=Configure LTSP-Server
 
 [Service]
+Type=oneshot
 ExecStart=/usr/local/bin/ltsp-org-updater --daemon
 
 [Install]
