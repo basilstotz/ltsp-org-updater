@@ -24,8 +24,8 @@ set -e
 
 case "$1" in
     configure)
-	systemctl disable ltsp-org-config.service
-	systemctl disable ltsp-org-update.service
+	systemctl disable ltsp-org-tftp.service
+	systemctl disable ltsp-org-images.service
 	#systemd starts also at boot! fixed!
 	systemctl disable ltsp-org-update.timer
 
