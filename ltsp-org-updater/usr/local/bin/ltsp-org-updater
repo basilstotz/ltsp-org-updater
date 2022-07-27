@@ -151,7 +151,7 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 	     update_kernel
 	     ;;
 	 #called by cron once a day (or by user)
-	 --cron-images)
+	 --cron-images|--update)
 	     #UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
 	     #if test "$UPTIME" -gt 120;then
 		 if test -f $PFAD/x86_64.img; then
