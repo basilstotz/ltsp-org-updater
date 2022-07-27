@@ -8,6 +8,8 @@ PFAD="/srv/ltsp/images"
 #ltsp
 ltsp_prepare(){
     test -f /etc/ltsp/ltsp.conf && return
+
+    mkdir -p /etc/ltsp
     
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
@@ -27,6 +29,28 @@ usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
 
+    mkdir -p /srv/tftp
+    cat <<EOF > /srv/tftp/Makefile
+DIR:=ltsp
+
+.PHONY: update
+update: /srv/ltsp/images/dummy $(DIR)/ltsp.ipxe $(DIR)/ltsp.img 
+
+/srv/ltsp/images/dummy:
+	test -f /srv/ltsp/images/dummy || touch /srv/ltsp/images/dummy
+
+$(DIR)/ltsp.ipxe: /srv/ltsp/images/*
+	echo ltsp-org-updater --kernel
+	ltsp ipxe
+
+$(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/*
+	ltsp initrd
+EOF
+
+    echo "* * * * * root /usr/local/bin/ltsp-org-updater --cron-tftp" > /etc/cron.d/ltsp-org-updater_cron-tftp
+    echo "22 22 * * * root /usr/local/bin/ltsp-org-updater --cron-images" > /etc/cron.d/ltsp-org-updater_cron-images
+    
+    
 }
 
 install_ltsp(){
@@ -46,9 +70,8 @@ install_ltsp(){
     ltsp_prepare
 }
 
-update_config(){
-    ip route|grep -q default  &&  ltsp dnsmasq
-    ltsp nfs
+
+update_kernel(){
     for I in $(ls $PFAD/*.img);do
 	BI=$(basename -s .img $I)
 	if test "$BI" = "lernstick";then
@@ -58,13 +81,23 @@ update_config(){
 	    ltsp kernel $BI
 	fi
     done
+}
+
+
+update_config(){
+    while ! nm-online -t 3600; do
+	true
+    done 
+    ltsp dnsmasq
+    ltsp nfs
+    update_kernel
     ltsp initrd
     ltsp ipxe
 }
 
 update_image(){
     ltsp image /
-    update_config
+    #update_config
 }
 
 update_lernstick(){
@@ -85,7 +118,7 @@ update_lernstick(){
 		    #ok, install it
 		    test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
 		    ln $REALNAME ../ltsp/images/lernstick.img
-		    update_config
+		    #update_config
 		    echo "info: succesfully downloaded and installed $REALNAME"
 		else
 		    echo "error: md5sum did not match. purge downloaded files"
@@ -110,23 +143,27 @@ update_lernstick(){
 #main
 if test "$1" = "--install" -o -n "$(command -v ltsp)";then
     case "$1" in
-	 --daemon)
-	     while ! nm-online -t 3600; do
-		 true
-	     done
-	     update_config
+	 #called by cron once a minute
+	 --cron-tftp)
+	     make --directory /srv/tftp update
 	     ;;
-	 --update)
-	     UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
-	     if test "$UPTIME" -gt 120;then
+	 #only called by --make-tftp (a bit ugly so ....)
+	 --kernel)
+	     update_kernel
+	     ;;
+	 #called by cron once a day (or by user)
+	 --cron-images)
+	     #UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
+	     #if test "$UPTIME" -gt 120;then
 		 if test -f $PFAD/x86_64.img; then
 		     update_image
 		 fi
 		 if test -f $PFAD/lernstick.img;then
 		     update_lernstick
 		 fi 
-	     fi
+	     #fi
 	     ;;
+	 #rest is called by user
 	 --install)
 	     install_ltsp
 	     ;;
