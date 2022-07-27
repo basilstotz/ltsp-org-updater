@@ -32,7 +32,7 @@ EOF
 
     mkdir -p /srv/ltsp/images
     mkdir -p /srv/tftp
-    cat <<EOF > /srv/tftp/Makefile
+    cat <<'EOF' > /srv/tftp/Makefile
 DIR:=ltsp
 
 .PHONY: update
