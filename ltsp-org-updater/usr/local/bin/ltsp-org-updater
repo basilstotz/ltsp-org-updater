@@ -49,10 +49,7 @@ $(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/*
 	ltsp initrd
 EOF
 
-    echo "* * * * * root /usr/local/bin/ltsp-org-updater --cron-tftp" > /etc/cron.d/ltsp-org-updater_cron-tftp
-    echo "22 22 * * * root /usr/local/bin/ltsp-org-updater --cron-images" > /etc/cron.d/ltsp-org-updater_cron-images
-    
-    
+        
 }
 
 install_ltsp(){
