@@ -9,6 +9,7 @@ PFAD="/srv/ltsp/images"
 ltsp_prepare(){
     test -f /etc/ltsp/ltsp.conf && return
 
+    
     mkdir -p /etc/ltsp
     
     cat <<EOF >  /etc/ltsp/ltsp.conf
@@ -29,6 +30,7 @@ usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
 
+    mkdir -p /srv/ltsp/images
     mkdir -p /srv/tftp
     cat <<EOF > /srv/tftp/Makefile
 DIR:=ltsp
@@ -68,7 +70,6 @@ install_ltsp(){
     done
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
-    update_config
 }
 
 
