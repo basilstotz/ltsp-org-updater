@@ -29,8 +29,8 @@ case "$1" in
 	#systemd starts also at boot! fixed!
 	systemctl disable ltsp-org-update.timer
 
-	echo "* * * * * root /usr/local/bin/ltsp-org-updater --cron-tftp" > /etc/cron.d/ltsp-org-updater_cron-tftp
-        echo "22 22 * * * root /usr/local/bin/ltsp-org-updater --cron-images" > /etc/cron.d/ltsp-org-updater_cron-images
+	echo "* * * * * root /usr/bin/systemctl start ltsp-org-tftp.service" > /etc/cron.d/ltsp-org-updater_cron-tftp
+        echo "22 22 * * * root /usr/bin/systemctl start ltsp-org-images.service" > /etc/cron.d/ltsp-org-updater_cron-images
 
 	
 	#echo "23 23 * * 1-5 root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater

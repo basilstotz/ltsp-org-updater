@@ -68,6 +68,7 @@ install_ltsp(){
     done
     apt-get --yes --install-recommends install ltsp ltsp-binaries
     ltsp_prepare
+    update_config
 }
 
 
