@@ -1,25 +1,5 @@
 #!/bin/sh
 
-copy_lernstick(){
-     echo "die datei wird installiert. Dies kann einige Minuten dauern. Bleibe geduldig ..."
-     cp $1 /srv/iso/.
-     cd /srv/iso
-     md5sum $(basename $1) > lernstick_debian11_latest.iso.md5
-     #ok, install it
-     test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
-     ln $(basename $1) ../ltsp/images/lernstick.img
-     update_kernel
-     ltsp initrd     #maybe not needed
-     ltsp ipxe
-     echo "Fertig!"
-}
-
-if test $1 = "--iso";then
-    FILE=$(zenity --file-selection)
-    sudo ( copy_lernstick $FILE ; ) 
-    exit 0
-fi
-
 
 test "$(id --user)" = 0 || exec sudo $0 $@
 
@@ -117,58 +97,85 @@ update_daemons(){
 }
 
 update_config(){
-    update_daemons
-    update_kernel
-    ltsp initrd
-    ltsp ipxe
+    if ! test -f /run/update_config; then
+	touch /run/update_config
+        update_daemons
+        update_kernel
+        ltsp initrd
+        ltsp ipxe
+	rm /run/update_config
+    fi
 }
 
 update_image(){
-    ltsp image /
-    update_kernel
-    ltsp initrd           #maybe not needed
-    ltsp ipxe
-    
+    if ! test -f /run/update_image; then
+	touch /run/update_image
+	ltsp image /
+	update_kernel
+	ltsp initrd           #maybe not needed
+	ltsp ipxe
+	rm /run/update_image
+    fi
 }
 
 update_lernstick(){
-    mkdir -p /srv/iso/
-    mkdir -p /srv/ltsp/images/
-    cd /srv/iso
-    URL="https://releases.lernstick.ch"
-    NAME="lernstick_debian11_latest"
-    test -f $NAME.iso.md5 || touch $NAME.iso.md5
-    if wget -O $NAME.iso.md5.tmp $URL/$NAME.iso.md5 2>/dev/null;then
-	if ! diff $NAME.iso.md5 $NAME.iso.md5.tmp >/dev/null;then
-	    if wget -c -O $NAME.iso.tmp $URL/$NAME.iso ;then
-		#we have a new image!
-		mv $NAME.iso.md5.tmp $NAME.iso.md5
-		REALNAME=$(cat $NAME.iso.md5|xargs|cut -d" " -f2)
-		mv $NAME.iso.tmp $REALNAME
-		if md5sum -c $NAME.iso.md5; then
-		    #ok, install it
-		    test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
-		    ln $REALNAME ../ltsp/images/lernstick.img
-		    update_kernel
-		    ltsp initrd     #maybe not needed
-		    ltsp ipxe
-		    echo "info: succesfully downloaded and installed $REALNAME"
+    if ! test -f /run/update_lernstick; then
+	
+	touch /run/update_lernstick
+	
+	mkdir -p /srv/iso/
+	mkdir -p /srv/ltsp/images/
+	cd /srv/iso
+	URL="https://releases.lernstick.ch"
+	NAME="lernstick_debian11_latest"
+	test -f $NAME.iso.md5 || touch $NAME.iso.md5
+	if wget -O $NAME.iso.md5.tmp $URL/$NAME.iso.md5 2>/dev/null;then
+	    if ! diff $NAME.iso.md5 $NAME.iso.md5.tmp >/dev/null;then
+		if wget -c -O $NAME.iso.tmp $URL/$NAME.iso ;then
+		    #we have a new image!
+		    mv $NAME.iso.md5.tmp $NAME.iso.md5
+		    REALNAME=$(cat $NAME.iso.md5|xargs|cut -d" " -f2)
+		    mv $NAME.iso.tmp $REALNAME
+		    if md5sum -c $NAME.iso.md5; then
+			#ok, install it
+			test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
+			ln $REALNAME ../ltsp/images/lernstick.img
+			update_kernel
+			ltsp initrd     #maybe not needed
+			ltsp ipxe
+			echo "info: succesfully downloaded and installed $REALNAME"
+		    else
+			echo "error: md5sum did not match. purge downloaded files"
+			rm $REALNAME
+			rm $NAME.iso.md5
+		    fi
+		    # purge old images
+		    find . -name lernstick*.iso -mtime +365 -exec rm \{\} \;
 		else
-		    echo "error: md5sum did not match. purge downloaded files"
-		    rm $REALNAME
-		    rm $NAME.iso.md5
+		    echo "error: could not download $NAME.iso"
 		fi
-		# purge old images
-		find . -name lernstick*.iso -mtime +365 -exec rm \{\} \;
 	    else
-		echo "error: could not download $NAME.iso"
+		rm $NAME.iso.md5.tmp
+		#echo "info: all is up to date. do nothing"
 	    fi
 	else
-	    rm $NAME.iso.md5.tmp
-	    #echo "info: all is up to date. do nothing"
+	    echo "error: could not download $NAME.iso.md5"
 	fi
-    else
-	echo "error: could not download $NAME.iso.md5"
+	rm /run/update_lernstick
+    fi    
+}
+
+
+update_both(){
+    if ! test -f /run/update_both; then
+	touch /run/update_both
+	if test -f $PFAD/x86_64.img; then
+	    update_image
+	fi
+	if test -f $PFAD/lernstick.img;then
+	    update_lernstick
+	fi
+	rm /run/update_both
     fi
 }
 
@@ -186,12 +193,7 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 	     ;;
 	 #called by cron once a day (or by user)
 	 --update)
-	     if test -f $PFAD/x86_64.img; then
-		 update_image
-	     fi
-	     if test -f $PFAD/lernstick.img;then
-		 update_lernstick
-	     fi 
+	     update_both
 	     ;;
 	 #rest is called by user
 	 --install)
