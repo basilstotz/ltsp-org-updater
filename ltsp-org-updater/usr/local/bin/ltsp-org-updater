@@ -1,5 +1,26 @@
 #!/bin/sh
 
+copy_lernstick(){
+     echo "die datei wird installiert. Dies kann einige Minuten dauern. Bleibe geduldig ..."
+     cp $1 /srv/iso/.
+     cd /srv/iso
+     md5sum $(basename $1) > lernstick_debian11_latest.iso.md5
+     #ok, install it
+     test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
+     ln $(basename $1) ../ltsp/images/lernstick.img
+     update_kernel
+     ltsp initrd     #maybe not needed
+     ltsp ipxe
+     echo "Fertig!"
+}
+
+if test $1 = "--iso";then
+    FILE=$(zenity --file-selection)
+    sudo ( copy_lernstick $FILE ; ) 
+    exit 0
+fi
+
+
 test "$(id --user)" = 0 || exec sudo $0 $@
 
 PFAD="/srv/ltsp/images"
