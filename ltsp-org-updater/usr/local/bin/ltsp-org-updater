@@ -30,20 +30,13 @@ usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
 
-    mkdir -p /srv/ltsp/images
+    #mkdir -p /srv/ltsp/images
     mkdir -p /srv/tftp
     cat <<'EOF' > /srv/tftp/Makefile
 DIR:=ltsp
 
 .PHONY: update
-update: /srv/ltsp/images/dummy $(DIR)/ltsp.ipxe $(DIR)/ltsp.img 
-
-/srv/ltsp/images/dummy:
-	test -f /srv/ltsp/images/dummy || touch /srv/ltsp/images/dummy
-
-$(DIR)/ltsp.ipxe: /srv/ltsp/images/*
-	echo ltsp-org-updater --kernel
-	ltsp ipxe
+update: $(DIR)/ltsp.img 
 
 $(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/*
 	ltsp initrd
@@ -71,23 +64,29 @@ install_ltsp(){
 
 
 update_kernel(){
-    for I in $(ls $PFAD/*.img);do
-	BI=$(basename -s .img $I)
-	if test "$BI" = "lernstick";then
-	    ltsp kernel $BI --kernel-initrd="live/vmlinuz* s|vmlinuz|initrd.img|"
+    if test -n "$(ls $PFAD )";then
+	for I in $(ls $PFAD/*.img);do
+	    BI=$(basename -s .img $I)
+	    if test "$BI" = "lernstick";then
+		ltsp kernel $BI --kernel-initrd="live/vmlinuz* s|vmlinuz|initrd.img|"
 
-	else
-	    ltsp kernel $BI
-	fi
-    done
+	    else
+		ltsp kernel $BI
+	    fi
+	done
+    fi
 }
 
-
-update_config(){
+update_dnsmasq(){
     while ! nm-online -t 3600; do
 	true
     done 
     ltsp dnsmasq
+
+}
+
+update_config(){
+    update_dnsmasq
     ltsp nfs
     update_kernel
     ltsp initrd
@@ -97,6 +96,10 @@ update_config(){
 update_image(){
     ltsp image /
     #update_config
+    update_kernel
+    ltsp initrd           #maybe not needed
+    ltsp ipxe
+    
 }
 
 update_lernstick(){
@@ -118,6 +121,9 @@ update_lernstick(){
 		    test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
 		    ln $REALNAME ../ltsp/images/lernstick.img
 		    #update_config
+		    update_kernel
+		    ltsp initrd     #maybe not needed
+		    ltsp ipxe
 		    echo "info: succesfully downloaded and installed $REALNAME"
 		else
 		    echo "error: md5sum did not match. purge downloaded files"
@@ -142,25 +148,22 @@ update_lernstick(){
 #main
 if test "$1" = "--install" -o -n "$(command -v ltsp)";then
     case "$1" in
+	 #called at boot by systemd
+ 	 --dnsmasq)
+	     update_dnsmasq
+	     ;;
 	 #called by cron once a minute
 	 --cron-tftp)
 	     make --directory /srv/tftp update
 	     ;;
-	 #only called by --make-tftp (a bit ugly so ....)
-	 --kernel)
-	     update_kernel
-	     ;;
 	 #called by cron once a day (or by user)
 	 --cron-images|--update)
-	     #UPTIME=$(cat /proc/uptime|cut -d\  -f1|cut -d. -f1)
-	     #if test "$UPTIME" -gt 120;then
-		 if test -f $PFAD/x86_64.img; then
-		     update_image
-		 fi
-		 if test -f $PFAD/lernstick.img;then
-		     update_lernstick
-		 fi 
-	     #fi
+	     if test -f $PFAD/x86_64.img; then
+		 update_image
+	     fi
+	     if test -f $PFAD/lernstick.img;then
+		 update_lernstick
+	     fi 
 	     ;;
 	 #rest is called by user
 	 --install)

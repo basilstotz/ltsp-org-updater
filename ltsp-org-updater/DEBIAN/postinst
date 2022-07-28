@@ -26,8 +26,7 @@ case "$1" in
     configure)
 	systemctl disable ltsp-org-tftp.service
 	systemctl disable ltsp-org-images.service
-	#systemd starts also at boot! fixed!
-	systemctl disable ltsp-org-update.timer
+	systemctl enable  ltsp-org-dnsmasq.service
 
 	echo "* * * * * root /usr/bin/systemctl start ltsp-org-tftp.service" > /etc/cron.d/ltsp-org-updater_cron-tftp
         echo "22 22 * * * root /usr/bin/systemctl start ltsp-org-images.service" > /etc/cron.d/ltsp-org-updater_cron-images

@@ -1,0 +1,9 @@
+[Unit]
+Description=Update Image
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ltsp-org-updater --dnsmasq
+
+[Install]
+WantedBy=multi-user.target
