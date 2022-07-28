@@ -9,7 +9,7 @@ install:
 
 
 .PHONY: copy
-copy:
+copy: package
 	@rm ~/git/edu-desktop/patch/basis/debs.d/ltsp-org-updater*.deb
 	@cp ltsp-org-updater*.deb ~/git/edu-desktop/patch/basis/debs.d/.
 
