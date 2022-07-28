@@ -30,7 +30,7 @@ usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
 
-    #mkdir -p /srv/ltsp/images
+    mkdir -p /srv/ltsp/images
     mkdir -p /srv/tftp
     cat <<'EOF' > /srv/tftp/Makefile
 DIR:=ltsp
