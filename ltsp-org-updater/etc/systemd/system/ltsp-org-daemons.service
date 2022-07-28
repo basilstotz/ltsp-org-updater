@@ -1,0 +1,9 @@
+[Unit]
+Description=Update Daemons
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ltsp-org-updater --daemons
+
+[Install]
+WantedBy=multi-user.target

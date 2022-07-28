@@ -1,9 +1,0 @@
-[Unit]
-Description=Update Image
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/ltsp-org-updater --cron-images
-
-[Install]
-WantedBy=multi-user.target

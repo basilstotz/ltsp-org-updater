@@ -1,9 +1,0 @@
-[Unit]
-Description=Configure LTSP-Server
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/ltsp-org-updater --cron-tftp
-
-[Install]
-WantedBy=multi-user.target

@@ -24,12 +24,12 @@ set -e
 
 case "$1" in
     configure)
-	systemctl disable ltsp-org-tftp.service
-	systemctl disable ltsp-org-images.service
-	systemctl enable  ltsp-org-dnsmasq.service
+	systemctl disable ltsp-org-initrd.service
+	systemctl disable ltsp-org-update.service
+	systemctl enable  ltsp-org-daemons.service
 
-	echo "* * * * * root /usr/bin/systemctl start ltsp-org-tftp.service" > /etc/cron.d/ltsp-org-updater_cron-tftp
-        echo "22 22 * * * root /usr/bin/systemctl start ltsp-org-images.service" > /etc/cron.d/ltsp-org-updater_cron-images
+	echo "* * * * * root /usr/bin/systemctl start ltsp-org-initrd.service" > /etc/cron.d/ltsp-org-updater_initrd
+        echo "22 22 * * * root /usr/bin/systemctl start ltsp-org-update.service" > /etc/cron.d/ltsp-org-updater_update
 
 	
 	#echo "23 23 * * 1-5 root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater

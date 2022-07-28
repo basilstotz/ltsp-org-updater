@@ -1,0 +1,9 @@
+[Unit]
+Description=Update Images
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/ltsp-org-updater --update
+
+[Install]
+WantedBy=multi-user.target

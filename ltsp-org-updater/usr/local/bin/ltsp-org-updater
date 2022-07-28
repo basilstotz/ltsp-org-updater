@@ -29,9 +29,7 @@ usr/local/bin/ltsp-org-updater
 usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
-
-    mkdir -p /srv/ltsp/images
-    mkdir -p /srv/tftp
+    
     cat <<'EOF' > /srv/tftp/Makefile
 DIR:=ltsp
 
@@ -59,6 +57,10 @@ install_ltsp(){
 	apt-get --yes install $P
     done
     apt-get --yes --install-recommends install ltsp ltsp-binaries
+
+    mkdir -p /srv/ltsp/images/
+    mkdir -p /srv/tftp/ltsp/
+    
     ltsp_prepare
 }
 
@@ -77,17 +79,18 @@ update_kernel(){
     fi
 }
 
-update_dnsmasq(){
+update_deamons(){
     while ! nm-online -t 3600; do
 	true
     done 
     ltsp dnsmasq
-
+    if ! test -f /etc/exports.d/ltsp-nfs.exports; then
+        ltsp nfs
+    fi
 }
 
 update_config(){
-    update_dnsmasq
-    ltsp nfs
+    update_daemons
     update_kernel
     ltsp initrd
     ltsp ipxe
@@ -95,7 +98,6 @@ update_config(){
 
 update_image(){
     ltsp image /
-    #update_config
     update_kernel
     ltsp initrd           #maybe not needed
     ltsp ipxe
@@ -120,7 +122,6 @@ update_lernstick(){
 		    #ok, install it
 		    test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
 		    ln $REALNAME ../ltsp/images/lernstick.img
-		    #update_config
 		    update_kernel
 		    ltsp initrd     #maybe not needed
 		    ltsp ipxe
@@ -149,15 +150,15 @@ update_lernstick(){
 if test "$1" = "--install" -o -n "$(command -v ltsp)";then
     case "$1" in
 	 #called at boot by systemd
- 	 --dnsmasq)
-	     update_dnsmasq
+ 	 --daemons)
+	     update_daemons
 	     ;;
 	 #called by cron once a minute
-	 --cron-tftp)
+	 --initrd)
 	     make --directory /srv/tftp update
 	     ;;
 	 #called by cron once a day (or by user)
-	 --cron-images|--update)
+	 --update)
 	     if test -f $PFAD/x86_64.img; then
 		 update_image
 	     fi
