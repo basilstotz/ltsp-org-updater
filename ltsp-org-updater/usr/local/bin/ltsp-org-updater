@@ -23,7 +23,9 @@ KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us timezone='Europ
 #CRONTAB_x="30 15 * * * poweroff"
 POST_INIT_SET_LOCALE="/etc/ltsp/set-locales.sh" 
 EOF
-
+    chown :sudo /etc/ltsp/ltsp.conf
+    chmod 660 /etc/ltsp/ltsp.conf
+    
     cat <<EOF > /etc/ltsp/add-image.excludes
 usr/local/bin/ltsp-org-updater
 usr/share/applications/org.gnome.Software.desktop
