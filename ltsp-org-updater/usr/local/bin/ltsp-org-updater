@@ -159,6 +159,22 @@ update_both(){
     fi
 }
 
+ltsp_daemons(){
+    	# init nfs
+    if ! test -f /etc/exports.d/ltsp-nfs.exports; then
+	ltsp nfs
+    fi
+    # init dnsmasq
+    while ! nm-online -t 3600; do
+	true
+    done 
+    ltsp dnsmasq
+    # update initrd
+    while true; do
+	make --directory /srv/tftp update
+	sleep 60
+    done
+}
 
 #main
 
@@ -169,20 +185,7 @@ if test -z "$(command -v ltsp)"; then
     fi
 else
     if test "$1" = "--daemons"; then
-	# init nfs
-	if ! test -f /etc/exports.d/ltsp-nfs.exports; then
-	    ltsp nfs
-	fi
-	# init dnsmasq
-	while ! nm-online -t 3600; do
-	    true
-	done 
-	ltsp dnsmasq
-	# update initrd
-	while true; do
-	    make --directory /srv/tftp update
-	    sleep 60
-	done
+	ltsp_daemons
 	#never reaches here!
 	exit 1
     fi
