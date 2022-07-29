@@ -1,9 +1,0 @@
-[Unit]
-Description=Configure initrd
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/ltsp-org-updater --initrd
-
-[Install]
-WantedBy=multi-user.target

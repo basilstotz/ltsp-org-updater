@@ -1,8 +1,8 @@
 [Unit]
-Description=Update Daemons
+Description=Update Daemons and Initrd
 
 [Service]
-Type=oneshot
+Type=simple
 ExecStart=/usr/local/bin/ltsp-org-updater --daemons
 
 [Install]

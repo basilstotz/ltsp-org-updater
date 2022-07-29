@@ -24,11 +24,11 @@ set -e
 
 case "$1" in
     configure)
-	systemctl disable ltsp-org-initrd.service
+	#systemctl disable ltsp-org-initrd.service
 	systemctl disable ltsp-org-update.service
 	systemctl enable  ltsp-org-daemons.service
 
-	echo "* * * * * root /usr/bin/systemctl start ltsp-org-initrd.service" > /etc/cron.d/ltsp-org-updater_initrd
+	#echo "* * * * * root /usr/bin/systemctl start ltsp-org-initrd.service" > /etc/cron.d/ltsp-org-updater_initrd
         echo "22 22 * * * root /usr/bin/systemctl start ltsp-org-update.service" > /etc/cron.d/ltsp-org-updater_update
 
 	

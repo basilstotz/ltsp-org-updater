@@ -1,9 +1,16 @@
 #!/bin/sh
 
 
-test "$(id --user)" = 0 || exec sudo $0 $@
+test "$(id --user)" = 0 || exec sudo "$0" "$@"
 
 PFAD="/srv/ltsp/images"
+
+on_exit(){
+    test -f /run/ltsp-org-updater.lock && rm /run/ltsp-org-updater.lock
+}
+
+trap on_exit EXIT
+trap on_exit SIGINT
 
 
 #ltsp
@@ -61,7 +68,7 @@ install_ltsp(){
     apt-get --yes update
     for P in debconf dnsmasq nfs-kernel-server ssh squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
 	echo "===================== $P =========================================="
-	apt-get --yes install $P
+	apt-get --yes install "$P"
     done
     apt-get --yes --install-recommends install ltsp ltsp-binaries
 
@@ -75,129 +82,122 @@ install_ltsp(){
 update_kernel(){
     if test -n "$(ls $PFAD )";then
 	for I in $(ls $PFAD/*.img);do
-	    BI=$(basename -s .img $I)
+	    BI=$(basename -s .img "$I")
 	    if test "$BI" = "lernstick";then
-		ltsp kernel $BI --kernel-initrd="live/vmlinuz* s|vmlinuz|initrd.img|"
+		ltsp kernel "$BI" --kernel-initrd="live/vmlinuz* s|vmlinuz|initrd.img|"
 
 	    else
-		ltsp kernel $BI
+		ltsp kernel "$BI"
 	    fi
 	done
     fi
 }
 
-update_daemons(){
-    while ! nm-online -t 3600; do
-	true
-    done 
-    ltsp dnsmasq
-    if ! test -f /etc/exports.d/ltsp-nfs.exports; then
-        ltsp nfs
-    fi
-}
-
 update_config(){
-    if ! test -f /run/update_config; then
-	touch /run/update_config
-        update_daemons
-        update_kernel
-        ltsp initrd
-        ltsp ipxe
-	rm /run/update_config
-    fi
+     update_daemons
+     update_kernel
+     ltsp initrd
+     ltsp ipxe
 }
 
 update_image(){
-    if ! test -f /run/update_image; then
-	touch /run/update_image
-	ltsp image /
-	update_kernel
-	ltsp initrd           #maybe not needed
-	ltsp ipxe
-	rm /run/update_image
-    fi
+     ltsp image /
+     update_kernel
+     ltsp initrd           #maybe not needed
+     ltsp ipxe
 }
 
 update_lernstick(){
-    if ! test -f /run/update_lernstick; then
 	
-	touch /run/update_lernstick
-	
-	mkdir -p /srv/iso/
-	mkdir -p /srv/ltsp/images/
-	cd /srv/iso
-	URL="https://releases.lernstick.ch"
-	NAME="lernstick_debian11_latest"
-	test -f $NAME.iso.md5 || touch $NAME.iso.md5
-	if wget -O $NAME.iso.md5.tmp $URL/$NAME.iso.md5 2>/dev/null;then
-	    if ! diff $NAME.iso.md5 $NAME.iso.md5.tmp >/dev/null;then
-		if wget -c -O $NAME.iso.tmp $URL/$NAME.iso ;then
-		    #we have a new image!
-		    mv $NAME.iso.md5.tmp $NAME.iso.md5
-		    REALNAME=$(cat $NAME.iso.md5|xargs|cut -d" " -f2)
-		    mv $NAME.iso.tmp $REALNAME
-		    if md5sum -c $NAME.iso.md5; then
-			#ok, install it
-			test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
-			ln $REALNAME ../ltsp/images/lernstick.img
-			update_kernel
-			ltsp initrd     #maybe not needed
-			ltsp ipxe
-			echo "info: succesfully downloaded and installed $REALNAME"
-		    else
-			echo "error: md5sum did not match. purge downloaded files"
-			rm $REALNAME
-			rm $NAME.iso.md5
-		    fi
-		    # purge old images
-		    find . -name lernstick*.iso -mtime +365 -exec rm \{\} \;
-		else
-		    echo "error: could not download $NAME.iso"
-		fi
-	    else
-		rm $NAME.iso.md5.tmp
-		#echo "info: all is up to date. do nothing"
-	    fi
-	else
-	    echo "error: could not download $NAME.iso.md5"
-	fi
-	rm /run/update_lernstick
-    fi    
+     mkdir -p /srv/iso/
+     mkdir -p /srv/ltsp/images/
+     cd /srv/iso
+     URL="https://releases.lernstick.ch"
+     NAME="lernstick_debian11_latest"
+     test -f "$NAME.iso.md5" || touch "$NAME.iso.md5"
+     if wget -O "$NAME.iso.md5.tmp" "$URL/$NAME.iso.md5" 2>/dev/null;then
+	 if ! diff "$NAME.iso.md5" "$NAME.iso.md5.tmp" >/dev/null;then
+	     if wget -c -O "$NAME.iso.tmp" "$URL/$NAME.iso" ;then
+		 #we have a new image!
+		 mv "$NAME.iso.md5.tmp" "$NAME.iso.md5"
+		 REALNAME=$(cat "$NAME.iso.md5"|xargs|cut -d" " -f2)
+		 mv "$NAME.iso.tmp" "$REALNAME"
+		 if md5sum -c "$NAME.iso.md5"; then
+		     #ok, install it
+		     test -f ../ltsp/images/lernstick.img && rm ../ltsp/images/lernstick.img
+		     ln "$REALNAME" ../ltsp/images/lernstick.img
+		     update_kernel
+		     ltsp initrd     #maybe not needed
+		     ltsp ipxe
+		     echo "info: succesfully downloaded and installed $REALNAME"
+		 else
+		     echo "error: md5sum did not match. purge downloaded files"
+		     rm "$REALNAME"
+		     rm "$NAME.iso.md5"
+		 fi
+		 # purge old images
+		 find . -name "lernstick*.iso" -mtime +365 -exec rm \{\} \;
+	     else
+		 echo "error: could not download $NAME.iso"
+	     fi
+	 else
+	     rm "$NAME.iso.md5.tmp"
+	     #echo "info: all is up to date. do nothing"
+	 fi
+     else
+	 echo "error: could not download $NAME.iso.md5"
+     fi
 }
 
 
 update_both(){
-    if ! test -f /run/update_both; then
-	touch /run/update_both
-	if test -f $PFAD/x86_64.img; then
-	    update_image
-	fi
-	if test -f $PFAD/lernstick.img;then
-	    update_lernstick
-	fi
-	rm /run/update_both
+    if test -f "$PFAD/x86_64.img"; then
+	update_image
+    fi
+    if test -f "$PFAD/lernstick.img";then
+	update_lernstick
     fi
 }
 
 
 #main
-if test "$1" = "--install" -o -n "$(command -v ltsp)";then
+
+# checks and specials
+if test -z "$(command -v ltsp)"; then
+    if ! test "$1" = "--install"; then
+	exit 0
+    fi
+else
+    if test "$1" = "--daemons"; then
+	# init nfs
+	if ! test -f /etc/exports.d/ltsp-nfs.exports; then
+	    ltsp nfs
+	fi
+	# init dnsmasq
+	while ! nm-online -t 3600; do
+	    true
+	done 
+	ltsp dnsmasq
+	# update initrd
+	while true; do
+	    make --directory /srv/tftp update
+	    sleep 60
+	done
+	#never reaches here!
+	exit 1
+    fi
+fi
+
+#ok
+if ! test -f /run/ltsp-org-updater.lock;then
+    touch /run/ltsp-org-updater.lock
     case "$1" in
-	 #called at boot by systemd
- 	 --daemons)
-	     update_daemons
-	     ;;
-	 #called by cron once a minute
-	 --initrd)
-	     make --directory /srv/tftp update
-	     ;;
-	 #called by cron once a day (or by user)
-	 --update)
-	     update_both
-	     ;;
-	 #rest is called by user
 	 --install)
 	     install_ltsp
+	     ;;
+	 --update)
+ 	     #also called by cron once a day
+	     update_both
 	     ;;
 	 --config)
 	     update_config
@@ -209,8 +209,12 @@ if test "$1" = "--install" -o -n "$(command -v ltsp)";then
 	     update_lernstick
 	     ;;
 	 *)
-	     echo "usage $(basename $0) --install | --config | --image | --lernstick | --update"
+	     echo "usage $(basename $0) --config | --image | --lernstick | --update"
 	     ;;
-     esac
+    esac
+    rm /run/ltsp-org-updater.lock
+else
+    echo "error: ltsp-org-updater is busy. try later again"
 fi
+
 exit
