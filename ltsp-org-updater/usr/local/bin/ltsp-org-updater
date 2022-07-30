@@ -48,6 +48,7 @@ update: $(DIR)/ltsp.img
 
 $(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/*
 	ltsp initrd
+	ltsp ipxe
 EOF
 
     cat <<EOF > /etc/default/ltsp
