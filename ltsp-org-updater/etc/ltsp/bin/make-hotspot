@@ -1,19 +1,24 @@
-#!/bin/sh
+#!/bin/bash
 
 LIVE_HOTSPOT="$1"
 
-if test -n "$LIVE_HOTSPOT"; then
-
-    SSID=$(echo "$LIVE_HOTSPOT"|cut -d"," -f1)
-    PSK=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
-
-    if nm-online -s -q; then
-       if nmcli radio wifi on; then
-	   CHANNEL=$(echo -e "1\n6\n11" | shuf -n1 - )
-	   nmcli dev wifi hotspot ssid "$SSID" band bg channel "$CHANNEL" password "$PSK" 
-       fi
-    fi
-    
+#only for debugging!
+if test -z "$LIVE_HOTSPOT"; then
+    LIVE_HOTSPOT="ltsp-test-hotspot,12345678"
 fi
+
+
+SSID=$(echo "$LIVE_HOTSPOT"|cut -d"," -f1)
+PSK=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
+
+
+if nm-online -s -q; then
+   if nmcli radio wifi on; then
+       CHANNEL=$(echo -e "1\n6\n11" | shuf -n1 - )
+       nmcli dev wifi hotspot ssid "$SSID" band bg channel "$CHANNEL" password "$PSK" 
+   fi
+fi
+    
+
 
 exit
