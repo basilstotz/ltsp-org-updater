@@ -29,7 +29,7 @@ KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us timezone='Europ
 #GDM3_CONF="WaylandEnable=false"  
 [clients]
 #CRONTAB_x="30 15 * * * poweroff"
-POST_INIT_SET_LOCALE="/etc/ltsp/set-locales.sh" 
+POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/init/" 
 EOF
     chown :sudo /etc/ltsp/ltsp.conf
     chmod 660 /etc/ltsp/ltsp.conf
@@ -46,7 +46,7 @@ DIR:=ltsp
 .PHONY: update
 update: $(DIR)/ltsp.img 
 
-$(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/*
+$(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/* /etc/ltsp/init/* /etc/ltsp/bin/*
 	ltsp initrd
 	ltsp ipxe
 EOF
@@ -75,6 +75,10 @@ install_ltsp(){
 
     mkdir -p /srv/ltsp/images/
     mkdir -p /srv/tftp/ltsp/
+
+    mkdir -p /etc/ltsp/bin/
+    mkdir -p /etc/ltsp/init/
+    
     
     ltsp_prepare
 }
