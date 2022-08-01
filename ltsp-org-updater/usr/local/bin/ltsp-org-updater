@@ -23,13 +23,13 @@ ltsp_prepare(){
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
 ADD_IMAGE_EXCLUDES="/etc/ltsp/conf/add-image.excludes"
-KERNEL_PARAMETERS="locales=es_ES.UTF-8 keyboard-layouts=es,ch,us timezone='Europe/Zurich' "
+KERNEL_PARAMETERS="locales=de_CH.UTF-8 keyboard-layouts=ch,esus timezone=Europe/Zurich hotspot=escuela,escuela0815"
 #DEFAULT_IMAGE="x86_64"
 [common]
 #GDM3_CONF="WaylandEnable=false"  
 [clients]
 #CRONTAB_x="30 15 * * * poweroff"
-POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/init/" 
+POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/ltsp/init/" 
 EOF
     chown :sudo /etc/ltsp/ltsp.conf
     chmod 660 /etc/ltsp/ltsp.conf
@@ -42,14 +42,18 @@ usr/bin/gnome-software
 EOF
     
     cat <<'EOF' > /srv/tftp/Makefile
-DIR:=ltsp
+DIR:=/srv/tftp/ltsp
 
 .PHONY: update
 update: $(DIR)/ltsp.img 
 
-$(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/* /etc/ltsp/init/* /etc/ltsp/bin/*
+$(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/ltsp.conf  /etc/ltsp/init/* /etc/ltsp/bin/*
 	ltsp initrd
 	ltsp ipxe
+	cp /etc/passwd /etc/ltsp/login/passwd
+	cp /etc/group /etc/ltsp/login/group
+	cp /etc/shadow /etc/ltsp/login/shadow
+	test -f /etc/gshadow && cp /etc/gshadow /etc/ltsp/login/gshadow
 EOF
 
     cat <<EOF > /etc/default/ltsp
@@ -78,14 +82,17 @@ install_ltsp(){
     mkdir -p /srv/tftp/ltsp/
 
     mkdir -p /srv/iso/lernstick
-    chown root:sudo /srv/iso
-    chmod 770 /srv/iso
     
     mkdir -p /etc/ltsp/bin/
     mkdir -p /etc/ltsp/init/
     mkdir -p /etc/ltsp/conf/
+    mkdir -p /etc/ltsp/login/
     
     ltsp_prepare
+
+    chown root:sudo /srv/iso
+    chmod 770 /srv/iso
+
 }
 
 
@@ -122,7 +129,7 @@ update_lernstick(){
      mkdir -p /srv/iso/lernstick
      mkdir -p /srv/ltsp/images/
      cd /srv/iso/lernstick
-     URL="https://releases.lernstick.ch"
+     URL="https://www.amxa.ch/debian/lernstick"
      NAME="lernstick_debian11_latest"
      test -f "$NAME.iso.md5" || touch "$NAME.iso.md5"
      if wget -O "$NAME.iso.md5.tmp" "$URL/$NAME.iso.md5" 2>/dev/null;then
