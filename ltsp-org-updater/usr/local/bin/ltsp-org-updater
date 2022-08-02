@@ -41,7 +41,7 @@ usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
     
-    cat <<'EOF' > /srv/tftp/Makefile
+    cat <<'EOF' > /etc/ltsp/config/Makefile
 DIR:=/srv/tftp/ltsp
 
 .PHONY: update
@@ -50,10 +50,12 @@ update: $(DIR)/ltsp.img
 $(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/ltsp.conf  /etc/ltsp/init/* /etc/ltsp/bin/*
 	ltsp initrd
 	ltsp ipxe
-	cp /etc/passwd /etc/ltsp/login/passwd
-	cp /etc/group /etc/ltsp/login/group
-	cp /etc/shadow /etc/ltsp/login/shadow
-	test -f /etc/gshadow && cp /etc/gshadow /etc/ltsp/login/gshadow
+	mkdir /home/.login/
+	chmod 600 /home/.login
+	cp /etc/passwd /home/.login//passwd
+	cp /etc/group /home/.login/group
+	cp /etc/shadow /home/.login/shadow
+	test -f /etc/gshadow && cp /etc/gshadow /home/.login/gshadow
 EOF
 
     cat <<EOF > /etc/default/ltsp
@@ -93,6 +95,15 @@ install_ltsp(){
     chown root:sudo /srv/iso
     chmod 770 /srv/iso
 
+}
+
+
+init_live(){
+    echo "info: not implemented"
+}
+
+init_user(){
+    echo "info: not implemented"
 }
 
 
@@ -201,7 +212,7 @@ ltsp_daemons(){
     ltsp dnsmasq
     # update initrd
     while true; do
-	make --directory /srv/tftp update
+	make --makefile /etc/ltsp/config/Makefile update
 	#link_iso
 	sleep 60
     done
@@ -242,8 +253,14 @@ if ! test -f /run/ltsp-org-updater.lock;then
 	 --lernstick)
 	     update_lernstick
 	     ;;
+	 --init-live)
+	     init-live
+	     ;;
+	 --init-user)
+	     init-user
+	     ;;
 	 *)
-	     echo "usage $(basename $0) --config | --image | --lernstick | --update"
+	     echo "usage $(basename $0) --config | --image | --lernstick | --update | --init-live | init-user "
 	     ;;
     esac
     rm /run/ltsp-org-updater.lock
