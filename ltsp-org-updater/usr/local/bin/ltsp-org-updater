@@ -1,5 +1,9 @@
 #!/bin/sh
 
+if "$1" = "--help";then
+     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
+     exit 0
+fi
 
 test "$(id --user)" = 0 || exec sudo "$0" "$@"
 
@@ -19,16 +23,27 @@ ltsp_prepare(){
 
     
     mkdir -p /etc/ltsp
+
+    # https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-run-time-behaviours.en.html
+    
+    # all keyboard are in: /usr/share/X11/xkb/rules/base.lst
+    # all locales are in: /usr/share/i18n/SUPPORTED
     
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
+KERNEL_PARAMETERS="locales=de_CH.UTF-8,de_DE.UTF-8,es_PE.UTF-8 keyboard-layouts=ch,de,latam,us timezone=Europe/Zurich hotspot=escuela,escuela0815"
+DEFAULT_IMAGE="lernstick"
+
+#do not change
 ADD_IMAGE_EXCLUDES="/etc/ltsp/conf/add-image.excludes"
-KERNEL_PARAMETERS="locales=de_CH.UTF-8 keyboard-layouts=ch,esus timezone=Europe/Zurich hotspot=escuela,escuela0815"
-#DEFAULT_IMAGE="x86_64"
+
 [common]
 #GDM3_CONF="WaylandEnable=false"  
+
 [clients]
 #CRONTAB_x="30 15 * * * poweroff"
+
+#do not change
 POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/ltsp/init/" 
 EOF
     chown :sudo /etc/ltsp/ltsp.conf
@@ -218,6 +233,11 @@ ltsp_daemons(){
     done
 }
 
+
+user_manager(){
+   echo "info: user manager is not implemented yet"
+}
+
 #main
 
 # checks and specials
@@ -237,6 +257,9 @@ fi
 if ! test -f /run/ltsp-org-updater.lock;then
     touch /run/ltsp-org-updater.lock
     case "$1" in
+	--help)
+	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
+	     ;;	    
 	 --install)
 	     install_ltsp
 	     ;;
@@ -259,9 +282,12 @@ if ! test -f /run/ltsp-org-updater.lock;then
 	 --init-user)
 	     init-user
 	     ;;
-	 *)
-	     echo "usage $(basename $0) --config | --image | --lernstick | --update | --init-live | init-user "
+	 "")
+	     user_manager
 	     ;;
+	 *)
+	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
+	     ;;	    
     esac
     rm /run/ltsp-org-updater.lock
 else
