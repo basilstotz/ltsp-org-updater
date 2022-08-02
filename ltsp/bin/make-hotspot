@@ -1,0 +1,27 @@
+#!/bin/bash
+
+LIVE_HOTSPOT="$1"
+
+#only for debugging! It's never called with empty params
+if test -z "$LIVE_HOTSPOT"; then
+    LIVE_HOTSPOT=ltsp-hotspot,12345678
+fi
+
+    
+SSID=$(echo "$LIVE_HOTSPOT"|cut -d"," -f1)
+PASSWORD=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
+
+if nm-online -s -q; then
+    #sleep 5
+    nmcli radio wifi off
+    #sleep 5
+    if nmcli radio wifi on; then
+       #sleep 10
+       CHANNEL=$(echo -e "1\n6\n11" | shuf -n1 - )
+       nmcli dev wifi hotspot ssid "$SSID" band bg channel "$CHANNEL" password "$PASSWORD" 
+   fi
+fi
+    
+
+
+exit

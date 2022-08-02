@@ -40,8 +40,8 @@ usr/local/bin/ltsp-org-updater
 usr/share/applications/org.gnome.Software.desktop
 usr/bin/gnome-software
 EOF
-    
-    cat <<'EOF' > /etc/ltsp/config/Makefile
+
+    cat <<'EOF' > /etc/ltsp/conf/Makefile
 DIR:=/srv/tftp/ltsp
 
 .PHONY: update
@@ -212,7 +212,7 @@ ltsp_daemons(){
     ltsp dnsmasq
     # update initrd
     while true; do
-	make --makefile /etc/ltsp/config/Makefile update
+	make --makefile /etc/ltsp/conf/Makefile update
 	#link_iso
 	sleep 60
     done
