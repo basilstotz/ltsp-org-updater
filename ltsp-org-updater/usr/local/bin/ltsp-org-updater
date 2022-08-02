@@ -1,6 +1,6 @@
 #!/bin/sh
 
-if "$1" = "--help";then
+if test "$1" = "--help";then
      echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
      exit 0
 fi
