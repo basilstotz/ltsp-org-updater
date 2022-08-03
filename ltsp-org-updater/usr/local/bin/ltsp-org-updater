@@ -22,12 +22,12 @@ ltsp_prepare(){
     test -f /etc/ltsp/ltsp.conf && return
 
     
-    mkdir -p /etc/ltsp
 
     # https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-run-time-behaviours.en.html
     
     # all keyboard are in: /usr/share/X11/xkb/rules/base.lst
     # all locales are in: /usr/share/i18n/SUPPORTED
+
     
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
@@ -49,35 +49,12 @@ EOF
     chown :sudo /etc/ltsp/ltsp.conf
     chmod 660 /etc/ltsp/ltsp.conf
 
-    mkdir -p /etc/ltsp/conf
-    cat <<EOF > /etc/ltsp/conf/add-image.excludes
-usr/local/bin/ltsp-org-updater
-usr/share/applications/org.gnome.Software.desktop
-usr/bin/gnome-software
-EOF
-
-    cat <<'EOF' > /etc/ltsp/conf/Makefile
-DIR:=/srv/tftp/ltsp
-
-.PHONY: update
-update: $(DIR)/ltsp.img 
-
-$(DIR)/ltsp.img: /etc/passwd /etc/group /etc/shadow /etc/ltsp/ltsp.conf  /etc/ltsp/init/* /etc/ltsp/bin/* 
-	ltsp initrd
-	ltsp ipxe
-	mkdir -p /home/.login
-	chmod 600 /home/.login
-	cp /etc/passwd /home/.login/passwd
-	cp /etc/group /home/.login/group
-	cp /etc/shadow /home/.login/shadow
-	test -f /etc/gshadow && cp /etc/gshadow /home/.login/gshadow
-EOF
-
     cat <<EOF > /etc/default/ltsp
 RUN=true
 LERNSTICK_NAME="lernstick_debian11_latest.iso"
 LERNSTICK_URL="https://releases.lernstick.ch"
 EOF
+
 }
 
 install_ltsp(){
@@ -233,10 +210,6 @@ ltsp_daemons(){
 }
 
 
-user_manager(){
-   echo "info: user manager is not implemented yet"
-}
-
 #main
 
 # checks and specials
@@ -275,14 +248,8 @@ if ! test -f /run/ltsp-org-updater.lock;then
 	 --lernstick)
 	     update_lernstick
 	     ;;
-	 --init-live)
-	     init-live
-	     ;;
-	 --init-user)
-	     init-user
-	     ;;
 	 "")
-	     user_manager
+	     /usr/local/bin/user-mananger
 	     ;;
 	 *)
 	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"

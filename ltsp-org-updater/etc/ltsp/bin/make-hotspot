@@ -9,16 +9,50 @@ fi
 
 
 SSID=$(echo "$LIVE_HOTSPOT"|cut -d"," -f1)
-PSK=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
+PASSWORD=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
+
+#find free(-erer?) channel
+TMP=$(mktemp)
+nmcli -t -f SIGNAL,CHAN dev wifi list |sed -e"s/:/ /g"|sort -g -r > $TMP
+LISTE=$(echo -e "0\n1\n2"|shuf -n3|xargs)
+while read -r SIGNAL CHANNEL; do
+    if test "$SIGNAL" -gt 75 -a "$CHANNEL" -lt 12; then 
+	c=$(( CHANNEL / 4 ));
+        LISTE=$(echo $LISTE|sed -e"s/$c//g")
+    fi
+done < $TMP
+rm $TMP
+CHAN=$(echo $LISTE|xargs|cut -d" " -f1)
 
 
-if nm-online -s -q; then
-   if nmcli radio wifi on; then
-       CHANNEL=$(echo -e "1\n6\n11" | shuf -n1 - )
-       nmcli dev wifi hotspot ssid "$SSID" band bg channel "$CHANNEL" password "$PSK" 
-   fi
-fi
+#main
+if test -n "$CHAN";then
     
+    case $CHAN in
+	0)
+	    CHANNEL=1
+	    ;;
+	1)
+	    CHANNEL=6
+	    ;;
+	2)
+	    CHANNEL=11
+	    ;;
+    esac
 
+    if nm-online -s -q; then
+       if nmcli radio wifi on; then
+	   if nmcli dev wifi hotspot ssid "$SSID" band bg channel "$CHANNEL" password "$PASSWORD";then
+	       echo "info: successfully created hotspot on channel $CHANNEL with ssid $SSID"
+	   else
+	       echo "error: could not create hotspot"
+	   fi
+       else
+	   echo "info: no radio device found"
+       fi
+    fi
+else
+    echo "info: no free channel. do not create hotspot"
+fi
 
 exit
