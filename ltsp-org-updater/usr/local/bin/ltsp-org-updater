@@ -31,9 +31,9 @@ ltsp_prepare(){
     
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
-KERNEL_PARAMETERS="locales=de_CH.UTF-8,de_DE.UTF-8,es_PE.UTF-8 keyboard-layouts=ch,de,latam,us timezone=Europe/Zurich hotspot=escuela,escuela0815"
-DEFAULT_IMAGE="lernstick"
+KERNEL_PARAMETERS="locales=de_CH.UTF-8,de_DE.UTF-8,es_PE.UTF-8 keyboard-layouts=ch,de,latam,us timezone=Europe/Zurich hotspot=escuela,escuela0815 quiet splash"
 
+DEFAULT_IMAGE="lernstick"
 #do not change
 ADD_IMAGE_EXCLUDES="/etc/ltsp/conf/add-image.excludes"
 
