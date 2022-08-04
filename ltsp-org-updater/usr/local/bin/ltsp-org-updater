@@ -220,7 +220,6 @@ ltsp_daemon(){
 
 #main
 
-. /etc/ltsp/conf/ltsp-org-updater.conf
 
 # checks and specials
 if test -z "$(command -v ltsp)"; then
@@ -233,23 +232,22 @@ else
 	#never reaches here!
 	exit 1
     fi
-    if test "$1" = "--cron"; then
-	echo "$UPDATER_START * * * root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-start
-        echo "$UPDATER_STOP * * * root /usr/bin/systemctl stop  ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-stop
-	systemctl restart cron.service
-	exit 0
-    fi
 fi
 
 #ok
+
+. /etc/ltsp/conf/ltsp-org-updater.conf
+
 if ! test -f /run/ltsp-org-updater.lock;then
     touch /run/ltsp-org-updater.lock
     case "$1" in
-	--help)
-	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
+ 	 --help)
+	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update ]"
 	     ;;	    
-	 --install)
-	     install_ltsp
+	 --cron)   
+	     echo "$UPDATER_START * * * root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-start
+             echo "$UPDATER_STOP * * * root /usr/bin/systemctl stop  ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-stop
+	     systemctl restart cron.service
 	     ;;
 	 --update)
  	     #also called by cron once a day
@@ -265,7 +263,7 @@ if ! test -f /run/ltsp-org-updater.lock;then
 	     update_lernstick
 	     ;;
 	 *)
-	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
+	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update ]"
 	     ;;	    
     esac
     test -f /run/ltsp-org-updater.lock && rm /run/ltsp-org-updater.lock 
