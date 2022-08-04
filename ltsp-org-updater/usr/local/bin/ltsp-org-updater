@@ -28,12 +28,13 @@ ltsp_prepare(){
     # all keyboard are in: /usr/share/X11/xkb/rules/base.lst
     # all locales are in: /usr/share/i18n/SUPPORTED
 
-    
+    mkdir -p /etc/ltsp/ 
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
 KERNEL_PARAMETERS="locales=de_CH.UTF-8,de_DE.UTF-8,es_PE.UTF-8 keyboard-layouts=ch,de,latam,us timezone=Europe/Zurich hotspot=escuela,escuela0815 quiet splash"
 
 DEFAULT_IMAGE="lernstick"
+
 #do not change
 ADD_IMAGE_EXCLUDES="/etc/ltsp/conf/add-image.excludes"
 
@@ -49,11 +50,19 @@ EOF
     chown :sudo /etc/ltsp/ltsp.conf
     chmod 660 /etc/ltsp/ltsp.conf
 
-    cat <<EOF > /etc/default/ltsp
-RUN=true
-LERNSTICK_NAME="lernstick_debian11_latest.iso"
-LERNSTICK_URL="https://releases.lernstick.ch"
+    cat <<EOF > /etc/ltsp/conf/ltsp-org-updater.conf
+UPDATER_START="56 22"  #format: minute stunde !
+UPDATER_STOP="56 05"
+
+LERNSTICK_ENABLE="true"
+LERNSTICK_ISO="lernstick_debian11_latest.iso"
+LERNSTICK_URL="https://www.amxa.ch/debian/lernstick"
+
+IMAGE_ENABLE="false"
 EOF
+
+    chown :sudo /etc/ltsp/conf/ltsp-org-updater.conf
+    chmod 660 /etc/ltsp/conf/ltsp-org-updater.conf
 
 }
 
@@ -131,13 +140,11 @@ update_lernstick(){
      mkdir -p /srv/iso/lernstick
      mkdir -p /srv/ltsp/images/
      cd /srv/iso/lernstick
-     URL="https://www.amxa.ch/debian/lernstick"
-     NAME="lernstick_debian11_latest"
+     NAME=$(basename -s .iso "$LERNSTICK_ISO")
      test -f "$NAME.iso.md5" || touch "$NAME.iso.md5"
-     touch .lernstick
-     if wget -O "$NAME.iso.md5.tmp" "$URL/$NAME.iso.md5" 2>/dev/null;then
+     if wget -O "$NAME.iso.md5.tmp" "$LERNSTICK_URL/$NAME.iso.md5" 2>/dev/null;then
 	 if ! diff "$NAME.iso.md5" "$NAME.iso.md5.tmp" >/dev/null;then
-	     if wget -c -O "$NAME.iso.tmp" "$URL/$NAME.iso" ;then
+	     if wget -c -O "$NAME.iso.tmp" "$LERNSTICK_URL/$NAME.iso" ;then
 		 #we have a new image!
 		 mv "$NAME.iso.md5.tmp" "$NAME.iso.md5"
 		 REALNAME=$(cat "$NAME.iso.md5"|xargs|cut -d" " -f2)
@@ -184,15 +191,15 @@ link_iso(){
 
 
 update_both(){
-    if test -f "$PFAD/x86_64.img"; then
+    if $IMAGE_ENABLE; then
 	update_image
     fi
-    if test -f "/srv/iso/lernstick/.lernstick";then
+    if $LERNSTICK_ENABLE;then
 	update_lernstick
     fi
 }
 
-ltsp_daemons(){
+ltsp_daemon(){
     	# init nfs
     if ! test -f /etc/exports.d/ltsp-nfs.exports; then
 	ltsp nfs
@@ -213,16 +220,24 @@ ltsp_daemons(){
 
 #main
 
+. /etc/ltsp/conf/ltsp-org-updater.conf
+
 # checks and specials
 if test -z "$(command -v ltsp)"; then
     if ! test "$1" = "--install"; then
 	exit 0
     fi
 else
-    if test "$1" = "--daemons"; then
-	ltsp_daemons
+    if test "$1" = "--daemon"; then
+	ltsp_daemon
 	#never reaches here!
 	exit 1
+    fi
+    if test "$1" = "--cron"; then
+	echo "$UPDATER_START * * * root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-start
+        echo "$UPDATER_STOP * * * root /usr/bin/systemctl stop  ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-stop
+	systemctl restart cron.service
+	exit 0
     fi
 fi
 

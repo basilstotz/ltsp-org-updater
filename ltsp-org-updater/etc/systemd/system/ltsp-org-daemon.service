@@ -1,0 +1,9 @@
+[Unit]
+Description=Update Daemons, Initrd and Cron
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/ltsp-org-updater --daemon
+
+[Install]
+WantedBy=multi-user.target

@@ -24,16 +24,10 @@ set -e
 
 case "$1" in
     configure)
-	#systemctl disable ltsp-org-initrd.service
+
 	systemctl disable ltsp-org-updater.service
-	systemctl enable  ltsp-org-daemons.service
+	systemctl enable  ltsp-org-daemon.service
 
-	#echo "* * * * * root /usr/bin/systemctl start ltsp-org-initrd.service" > /etc/cron.d/ltsp-org-updater_initrd
-        echo "22 22 * * * root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater_start
-        echo "05 22 * * * root /usr/bin/systemctl stop  ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater_stop
-
-	
-	#echo "23 23 * * 1-5 root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
