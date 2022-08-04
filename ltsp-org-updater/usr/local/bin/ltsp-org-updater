@@ -134,6 +134,7 @@ update_lernstick(){
      URL="https://www.amxa.ch/debian/lernstick"
      NAME="lernstick_debian11_latest"
      test -f "$NAME.iso.md5" || touch "$NAME.iso.md5"
+     touch .lernstick
      if wget -O "$NAME.iso.md5.tmp" "$URL/$NAME.iso.md5" 2>/dev/null;then
 	 if ! diff "$NAME.iso.md5" "$NAME.iso.md5.tmp" >/dev/null;then
 	     if wget -c -O "$NAME.iso.tmp" "$URL/$NAME.iso" ;then
@@ -186,7 +187,7 @@ update_both(){
     if test -f "$PFAD/x86_64.img"; then
 	update_image
     fi
-    if test -f "$PFAD/lernstick.img";then
+    if test -f "/srv/iso/lernstick/.lernstick";then
 	update_lernstick
     fi
 }
@@ -248,14 +249,11 @@ if ! test -f /run/ltsp-org-updater.lock;then
 	 --lernstick)
 	     update_lernstick
 	     ;;
-	 "")
-	     /usr/local/bin/user-mananger
-	     ;;
 	 *)
 	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update | --init-live ]"
 	     ;;	    
     esac
-    rm /run/ltsp-org-updater.lock
+    test -f /run/ltsp-org-updater.lock && rm /run/ltsp-org-updater.lock 
 else
     echo "error: ltsp-org-updater is busy. try later again"
 fi

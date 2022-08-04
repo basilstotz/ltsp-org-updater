@@ -10,36 +10,36 @@ fi
 
 SSID=$(echo "$LIVE_HOTSPOT"|cut -d"," -f1)
 PASSWORD=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
+LEVEL=$(echo "$LIVE_HOTSPOT"|cut -d"," -f3)
+FILTER=$(echo "$LIVE_HOTSPOT"|cut -d"," -f4)
 
+if test -z "$LEVEL"; then LEVEL=80;fi 
+
+if ! test "$FILTER" = "true";then FILTER=false;fi
+    
 #find free(-erer?) channel
 TMP=$(mktemp)
-nmcli -t -f SIGNAL,CHAN dev wifi list |sed -e"s/:/ /g"|sort -g -r > $TMP
+nmcli -t -f SIGNAL,CHAN,SSID dev wifi list |sed -e"s/:/ /g"|sort -g -r > "$TMP"
 LISTE=$(echo -e "0\n1\n2"|shuf -n3|xargs)
-while read -r SIGNAL CHANNEL; do
-    if test "$SIGNAL" -gt 75 -a "$CHANNEL" -lt 12; then 
-	c=$(( CHANNEL / 4 ));
-        LISTE=$(echo $LISTE|sed -e"s/$c//g")
+while read -r SIGNAL CHANNEL _SSID; do
+    if test "$SIGNAL" -gt "$LEVEL" -a "$CHANNEL" -lt 12; then
+	if test "$_SSID" = "$SSID" -o "$FILTER" != "true";then
+	    c=$(( CHANNEL / 4 ));
+	    LISTE=$(echo "$LISTE"|sed -e"s/$c//g")
+	fi
     fi
-done < $TMP
-rm $TMP
-CHAN=$(echo $LISTE|xargs|cut -d" " -f1)
+done < "$TMP"
+rm "$TMP"
+CHAN=$(echo "$LISTE"|xargs|cut -d" " -f1)
 
 
 #main
 if test -n "$CHAN";then
-    
-    case $CHAN in
-	0)
-	    CHANNEL=1
-	    ;;
-	1)
-	    CHANNEL=6
-	    ;;
-	2)
-	    CHANNEL=11
-	    ;;
+    case "$CHAN" in
+	0) CHANNEL=1  ;;
+	1) CHANNEL=6  ;;
+	2) CHANNEL=11 ;;
     esac
-
     if nm-online -s -q; then
        if nmcli radio wifi on; then
 	   if nmcli dev wifi hotspot ssid "$SSID" band bg channel "$CHANNEL" password "$PASSWORD";then
@@ -54,5 +54,4 @@ if test -n "$CHAN";then
 else
     echo "info: no free channel. do not create hotspot"
 fi
-
 exit
