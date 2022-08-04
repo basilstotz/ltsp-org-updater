@@ -28,6 +28,8 @@ ltsp_prepare(){
     # all keyboard are in: /usr/share/X11/xkb/rules/base.lst
     # all locales are in: /usr/share/i18n/SUPPORTED
 
+    # Peru Timezone America/Lima
+    
     mkdir -p /etc/ltsp/ 
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
@@ -124,7 +126,11 @@ update_config(){
 }
 
 update_image(){
-     ltsp image /
+     if test "$1" = "--quiet";then
+	 ltsp image /  >/dev/null 2>/dev/null
+     else
+	 ltsp image /
+     fi
      update_kernel
      ltsp initrd           #maybe not needed
      ltsp ipxe
@@ -137,13 +143,14 @@ update_lernstick(){
      cd /srv/iso/lernstick
      NAME=$(basename -s .iso "$LERNSTICK_ISO")
      test -f "$NAME.iso.md5" || touch "$NAME.iso.md5"
-     if wget -O "$NAME.iso.md5.tmp" "$LERNSTICK_URL/$NAME.iso.md5" 2>/dev/null;then
+     if wget "$1" -O "$NAME.iso.md5.tmp" "$LERNSTICK_URL/$NAME.iso.md5" 2>/dev/null;then
 	 if ! diff "$NAME.iso.md5" "$NAME.iso.md5.tmp" >/dev/null;then
-	     if wget -c -O "$NAME.iso.tmp" "$LERNSTICK_URL/$NAME.iso" ;then
+	     if wget "$1"  -c -O "$NAME.iso.tmp" "$LERNSTICK_URL/$NAME.iso" ;then
 		 #we have a new image!
 		 mv "$NAME.iso.md5.tmp" "$NAME.iso.md5"
 		 REALNAME=$(cat "$NAME.iso.md5"|xargs|cut -d" " -f2)
 		 mv "$NAME.iso.tmp" "$REALNAME"
+		 echo "info: verify checksum"
 		 if md5sum -c "$NAME.iso.md5"; then
 		     #ok, install it
 		     test -f /srv/ltsp/images/lernstick.img && rm /srv/ltsp/images/lernstick.img
@@ -159,9 +166,10 @@ update_lernstick(){
 		 fi
 		 # purge old images
 		 find . -name "lernstick*.iso" -mtime +365 -exec rm \{\} \;
+		 true
 	     else
 		 echo "error: could not download $NAME.iso"
-	     fi
+	     fi 
 	 else
 	     rm "$NAME.iso.md5.tmp"
 	     #echo "info: all is up to date. do nothing"
@@ -187,10 +195,10 @@ link_iso(){
 
 update_both(){
     if $IMAGE_ENABLE; then
-	update_image
+	update_image --quiet
     fi
     if $LERNSTICK_ENABLE;then
-	update_lernstick
+	update_lernstick --quet
     fi
 }
 
@@ -266,7 +274,7 @@ if ! test -f /run/ltsp-org-updater.lock;then
     esac
     test -f /run/ltsp-org-updater.lock && rm /run/ltsp-org-updater.lock 
 else
-    echo "error: ltsp-org-updater is busy. try later again"
+    echo "info: ltsp-org-updater is busy. try later again"
 fi
 
 exit
