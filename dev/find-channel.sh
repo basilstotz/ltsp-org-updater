@@ -1,11 +1,31 @@
-#!/bin/sh
+#!/bin/bash
 
 
 find_channel(){
 ONE=-1
 TWO=-1
 
-uhu=$(nmcli -t -f SIGNAL,CHAN dev wifi list |sed -e"s/:/ /g"|sort -g -r |  while read -r SIGNAL CHANNEL; do
+TMP=$(mktemp)
+nmcli -t -f SIGNAL,CHAN dev wifi list |sed -e"s/:/ /g"|sort -g -r > $TMP
+LISTE=$(echo -e "0\n1\n2"|shuf -n3|xargs)
+while read -r SIGNAL CHANNEL; do
+    if test "$SIGNAL" -gt 75 -a "$CHANNEL" -lt 12; then 
+	c=$(( CHANNEL / 4 ));
+        LISTE=$(echo $LISTE|sed -e"s/$c//g")
+    fi
+done < $TMP
+rm $TMP
+CHANNEL=$(echo $LISTE|xargs|cut -d" " -f1)
+
+
+
+echo ========================      
+echo "|$CHANNEL|"
+echo ======================
+
+exit
+
+uhu=$(cat /tmp/uhu.txt |  while read -r SIGNAL CHANNEL; do
     #echo -1
     if test $CHANNEL -lt 12;then
 	#echo $SIGNAL $CHANNEL

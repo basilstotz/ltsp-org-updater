@@ -223,7 +223,10 @@ ltsp_daemon(){
 
 # checks and specials
 if test -z "$(command -v ltsp)"; then
-    if ! test "$1" = "--install"; then
+    if test "$1" = "--install"; then
+	install_ltsp
+    else
+	echo "usage: sudo $(basename $0) --install"
 	exit 0
     fi
 else
