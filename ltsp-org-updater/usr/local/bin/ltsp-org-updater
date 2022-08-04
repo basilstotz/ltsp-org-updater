@@ -50,7 +50,7 @@ EOF
     chown :sudo /etc/ltsp/ltsp.conf
     chmod 660 /etc/ltsp/ltsp.conf
 
-    cat <<EOF > /etc/ltsp/conf/ltsp-org-updater.conf
+    cat <<EOF > /etc/ltsp/updater.conf
 UPDATER_START="56 22"  #format: minute stunde !
 UPDATER_STOP="56 05"
 
@@ -61,8 +61,8 @@ LERNSTICK_URL="https://www.amxa.ch/debian/lernstick"
 IMAGE_ENABLE="false"
 EOF
 
-    chown :sudo /etc/ltsp/conf/ltsp-org-updater.conf
-    chmod 660 /etc/ltsp/conf/ltsp-org-updater.conf
+    chown :sudo /etc/ltsp/updater.conf
+    chmod 660 /etc/ltsp/updater.conf
 
 }
 
@@ -98,15 +98,6 @@ install_ltsp(){
 }
 
 
-init_live(){
-    echo "info: not implemented"
-}
-
-init_user(){
-    echo "info: not implemented"
-}
-
-
 update_kernel(){
     if test -n "$(ls $PFAD )";then
 	for I in $(ls $PFAD/*.img);do
@@ -122,10 +113,14 @@ update_kernel(){
 }
 
 update_config(){
-     update_daemons
-     update_kernel
      ltsp initrd
      ltsp ipxe
+     mkdir -p /home/.login
+     chmod 600 /home/.login
+     cp /etc/passwd /home/.login/passwd
+     cp /etc/group /home/.login/group
+     cp /etc/shadow /home/.login/shadow
+     cp /etc/gshadow /home/.login/gshadow
 }
 
 update_image(){
@@ -227,8 +222,8 @@ if test -z "$(command -v ltsp)"; then
 	install_ltsp
     else
 	echo "usage: sudo $(basename $0) --install"
-	exit 0
     fi
+    exit 0
 else
     if test "$1" = "--daemon"; then
 	ltsp_daemon
@@ -239,7 +234,7 @@ fi
 
 #ok
 
-. /etc/ltsp/conf/ltsp-org-updater.conf
+. /etc/ltsp/updater.conf
 
 if ! test -f /run/ltsp-org-updater.lock;then
     touch /run/ltsp-org-updater.lock
