@@ -50,7 +50,7 @@ Config ()
 
 if test -n "$LIVE_HOTSPOT"; then
 
-     cat <<EOF > /etc/systemd/system/make-accesspoint.service
+     cat <<EOF > /etc/systemd/system/make-hotspot.service
 [Unit]
 Description=Setup Hotspot
 After=network.target
@@ -58,15 +58,12 @@ After=network.target
 [Service]
 Type=oneshot
 ExecStart=/etc/ltsp/bin/make-hotspot $LIVE_HOTSPOT
-#RemainAfterExit=true
-#ExecStop=/opt/foo/teardown-foo.sh
-#StandardOutput=journal
 
 [Install]
 WantedBy=multi-user.target
 EOF
 
-     /usr/bin/systemctl enable make-accesspoint.service
+     /usr/bin/systemctl enable make-hotspot.service
 fi
 
 }

@@ -66,6 +66,26 @@ EOF
     chown :sudo /etc/ltsp/updater.conf
     chmod 660 /etc/ltsp/updater.conf
 
+
+cat <<EOF > /etc/ltsp/puavo.conf
+puavo.pkg.etcher latest
+puavo.pkg.cryptomator latest
+puavo.pkg.joplin latest
+puavo.pkg.lumi latest
+puavo.pkg.marktext latest
+puavo.pkg.onlyoffice latest
+puavo.pkg.rpiimager latest
+puavo.pkg.sozi latest
+puavo.pkg.styluslab latest
+puavo.pkg.telegram latest
+puavo.pkg.thymiosuite 
+puavo.pkg.walc latest
+puavo.pkg.write latest
+EOF
+
+    chown :sudo /etc/ltsp/puavo.conf
+    chmod 660 /etc/ltsp/puavo.conf
+
 }
 
 install_ltsp(){
@@ -203,7 +223,13 @@ update_both(){
 }
 
 ltsp_daemon(){
-    	# init nfs
+    # puavo-package
+    mkdir -p /images
+    mkdir -p /srv/puavo-images
+    mount -o bind /srv/puavo-images /images
+    systemctl restart nfs-kernel.server.service
+    
+    # init nfs
     if ! test -f /etc/exports.d/ltsp-nfs.exports; then
 	ltsp nfs
     fi
