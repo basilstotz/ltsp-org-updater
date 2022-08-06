@@ -1,0 +1,33 @@
+#!/bin/sh
+
+echo $PATH
+
+TMP=/usr/local/bin/puavo-pkg-install
+
+cat <<EOF > $TMP
+#!/bin/sh
+/usr/local/bin/puavo-pkg-init fatclient 
+/usr/local/bin/puavo-conf-set /etc/ltsp/puavo.conf 
+/etc/puavo-pkg/lib/setup_puavopkgs
+exit 0
+EOF
+
+chmod +x $TMP
+
+     cat <<EOF > /etc/systemd/system/puavo-pkg-init.service
+[Unit]
+Description=Setup Puavo Package
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=$TMP
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+     /usr/bin/systemctl enable puavo-pkg-init.service
+
+
+

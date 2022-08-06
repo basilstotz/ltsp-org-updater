@@ -1,0 +1,13 @@
+#!/bin/sh
+
+if test -f /etc/lernstickWelcome; then
+    sed -e"s/true/false/g" -i /etc/lernstickWelcome
+fi
+
+if test -f /usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop; then
+  rm /usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop
+fi
+
+if test -f /usr/share/applications/ch.fhnw.lernstickwelcome.controller.welcomeapplication.desktop; then
+  rm /usr/share/applications/ch.fhnw.lernstickwelcome.controller.welcomeapplication.desktop
+fi

@@ -1,6 +1,0 @@
-#!/bin/sh
-
-if test -f /etc/lernstickWelcome; then
-    sed -e"s/true/false/g" -i /etc/lernstickWelcome
-fi
-

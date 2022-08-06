@@ -1,0 +1,6 @@
+#!/bin/sh
+
+if test -f /etc/gdm3/greeter.dconf-defaults; then
+   sed -e "s/^.*disable-user-list.*$/disable-user-list=true/g" -i /etc/gdm3/greeter.dconf-defaults
+fi
+ 
