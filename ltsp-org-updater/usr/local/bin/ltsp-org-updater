@@ -224,10 +224,10 @@ update_both(){
 
 ltsp_daemon(){
     # puavo-package
-    mkdir -p /images
-    mkdir -p /srv/puavo-images
-    mount -o bind /srv/puavo-images /images
-    systemctl restart nfs-kernel.server.service
+    #mkdir -p /images
+    #mkdir -p /srv/puavo-images
+    #mount -o bind /srv/puavo-images /images
+    #systemctl restart nfs-kernel.server.service
     
     # init nfs
     if ! test -f /etc/exports.d/ltsp-nfs.exports; then
