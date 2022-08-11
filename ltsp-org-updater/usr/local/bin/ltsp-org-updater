@@ -33,18 +33,20 @@ ltsp_prepare(){
     mkdir -p /etc/ltsp/ 
     cat <<EOF >  /etc/ltsp/ltsp.conf
 [server]
-KERNEL_PARAMETERS="locales=de_CH.UTF-8,de_DE.UTF-8,es_PE.UTF-8 keyboard-layouts=ch,de,latam,us timezone=Europe/Zurich hotspot=escuela,escuela0815 quiet splash"
+KERNEL_PARAMETERS="locales=es_PE.UTF-8,de_DE.UTF-8,de_CH.UTF-8 keyboard-layouts=latam,de,ch,us timezone=America/Lima hotspot=escuela,escuela0815 quiet splash"
 
-DEFAULT_IMAGE="lernstick"
+#DEFAULT_IMAGE="lernstick"
 
 #do not change
 ADD_IMAGE_EXCLUDES="/etc/ltsp/conf/add-image.excludes"
 
 [common]
+#MENU_TIMEOUT="-1"
 #GDM3_CONF="WaylandEnable=false"  
 
 [clients]
 #CRONTAB_x="30 15 * * * poweroff"
+#CRONTAB_x="30 15 * * * rtcwake -m mem -t $(date -d\"tomorrow 06:00\" +%s)"
 
 #do not change
 POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/ltsp/init/" 
@@ -58,7 +60,7 @@ UPDATER_STOP="56 05"
 
 LERNSTICK_ENABLE="true"
 LERNSTICK_ISO="lernstick_debian11_latest.iso"
-LERNSTICK_URL="https://www.amxa.ch/debian/lernstick"
+LERNSTICK_URL="https://releases.lernstick.ch"
 
 IMAGE_ENABLE="false"
 EOF
