@@ -3,7 +3,7 @@ Description=Update Daemons, Initrd and Cron
 
 [Service]
 Type=simple
-ExecStart=/usr/local/bin/ltsp-org-updater --daemon
+ExecStart=/usr/bin/systemd-inhibit --who="ltsp-org-updater" --what="sleep:idle:handle-lid-switch" /usr/local/bin/ltsp-org-updater --daemon
 
 [Install]
 WantedBy=multi-user.target

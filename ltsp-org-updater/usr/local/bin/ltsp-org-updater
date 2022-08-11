@@ -146,11 +146,7 @@ update_config(){
 }
 
 update_image(){
-     if test "$1" = "--quiet";then
-	 ltsp image /  >/dev/null 2>/dev/null
-     else
-	 ltsp image /
-     fi
+     ltsp image /
      update_kernel
      ltsp initrd           #maybe not needed
      ltsp ipxe
@@ -163,9 +159,10 @@ update_lernstick(){
      cd /srv/iso/lernstick
      NAME=$(basename -s .iso "$LERNSTICK_ISO")
      test -f "$NAME.iso.md5" || touch "$NAME.iso.md5"
-     if wget "$1" -O "$NAME.iso.md5.tmp" "$LERNSTICK_URL/$NAME.iso.md5" 2>/dev/null;then
+     
+     if wget -O "$NAME.iso.md5.tmp" "$LERNSTICK_URL/$NAME.iso.md5";then
 	 if ! diff "$NAME.iso.md5" "$NAME.iso.md5.tmp" >/dev/null;then
-	     if wget "$1"  -c -O "$NAME.iso.tmp" "$LERNSTICK_URL/$NAME.iso" ;then
+	     if wget -c -O "$NAME.iso.tmp" "$LERNSTICK_URL/$NAME.iso" ;then
 		 #we have a new image!
 		 mv "$NAME.iso.md5.tmp" "$NAME.iso.md5"
 		 REALNAME=$(cat "$NAME.iso.md5"|xargs|cut -d" " -f2)
@@ -215,10 +212,10 @@ link_iso(){
 
 update_both(){
     if $IMAGE_ENABLE; then
-	update_image --quiet
+	update_image 
     fi
     if $LERNSTICK_ENABLE;then
-	update_lernstick --quet
+	update_lernstick
     fi
 }
 

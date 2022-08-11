@@ -1,0 +1,26 @@
+#!/bin/sh
+
+locale | grep -q "de_" && exit 0
+
+LIST="pauker-program-gui-swing-paukerframe.desktop
+tipp10.desktop
+lernareal.desktop
+kinderzeitmaschine.desktop
+mille-feuilles.desktop
+klett.desktop
+orthografietrainer.desktop
+kinder-wollen-singen.desktop
+sikore.desktop
+stellarium_lon.desktop
+unserkoerper.desktop"
+
+PFAD="/usr/share/applications"
+
+for P in $LIST; do
+   if test -f $PFAD/$P; then
+       rm $PFAD/$P
+   fi
+done
+
+
+	 
