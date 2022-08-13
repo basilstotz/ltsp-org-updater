@@ -87,6 +87,8 @@ EOF
     chown :sudo /etc/ltsp/puavo.conf
     chmod 660 /etc/ltsp/puavo.conf
 
+ 
+    
 }
 
 install_ltsp(){
@@ -98,7 +100,7 @@ install_ltsp(){
     fi    
 
     apt-get --yes update
-    for P in avahi-daemon avahi-utils debconf dnsmasq nfs-kernel-server ssh squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
+    for P in webfs avahi-daemon avahi-utils debconf dnsmasq nfs-kernel-server ssh squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
 	echo "===================== $P =========================================="
 	apt-get --yes install "$P"
     done
@@ -117,6 +119,10 @@ install_ltsp(){
 
     chown root:sudo /srv/iso
     chmod 770 /srv/iso
+
+    #sed -e "s/^UID_MIN.*$/UID_MIN 10000/g" -i /etc/login.defs
+    #sed -e "s/^GID_MIN.*$/GID_MIN 10000/g" -i /etc/login.defs
+
 
 }
 
@@ -138,12 +144,29 @@ update_kernel(){
 update_config(){
      ltsp initrd
      ltsp ipxe
-     mkdir -p /home/.login
-     chmod 600 /home/.login
-     cp /etc/passwd /home/.login/passwd
-     cp /etc/group /home/.login/group
-     cp /etc/shadow /home/.login/shadow
-     cp /etc/gshadow /home/.login/gshadow
+
+     # save passwds
+     DST="/home/.config/login"
+     mkdir -p $DST
+     chmod 600 $DST
+     cd $DST
+
+     cp -a /etc/passwd passwd
+     cp -a /etc/group group
+     cp -a /etc/shadow shadow
+     cp -a /etc/gshadow gshadow
+
+     # for laptops
+     cd ..
+     if ! test -f pwmerge; then
+	 cp /usr/share/ltsp/client/login/pwmerge .
+     fi
+     
+     HTML="/var/www/html"
+     tar -c -z -f $HTML/config.tgz *
+     cd $HTML
+     md5sum config.tgz > config.tgz.md5sum
+     
 }
 
 update_image(){
