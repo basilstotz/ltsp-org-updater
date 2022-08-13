@@ -161,6 +161,12 @@ update_config(){
      if ! test -f pwmerge; then
 	 cp /usr/share/ltsp/client/login/pwmerge .
      fi
+
+     cat <<EOF > wlan
+SSID="escuela"
+PASSWORD="escuela0815"
+EOF
+
      
      HTML="/var/www/html"
      tar -c -z -f $HTML/config.tgz *
