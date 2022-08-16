@@ -18,10 +18,17 @@ trap on_exit INT
 
 
 #ltsp
-ltsp_prepare(){
+ltsp_setup(){
     test -f /etc/ltsp/ltsp.conf && return
 
+    mkdir -p /srv/ltsp/images/
+    mkdir -p /srv/tftp/ltsp/
+
+    mkdir -p /srv/iso/lernstick
     
+    mkdir -p /etc/ltsp/bin/
+    mkdir -p /etc/ltsp/init/
+    mkdir -p /etc/ltsp/conf/
 
     # https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-run-time-behaviours.en.html
     
@@ -106,7 +113,15 @@ EOF
    </service>
  </service-group>
 EOF
-    
+
+    chown root:sudo /srv/iso
+    chmod 770 /srv/iso
+
+    #sed -e "s/^UID_MIN.*$/UID_MIN 10000/g" -i /etc/login.defs
+    #sed -e "s/^GID_MIN.*$/GID_MIN 10000/g" -i /etc/login.defs
+
+    systemctl enable ltsp-org-daemon.service
+
 }
 
 install_ltsp(){
@@ -116,32 +131,10 @@ install_ltsp(){
     else
        add-apt-repository --yes ppa:ltsp
     fi    
-
     apt-get --yes update
-    for P in webfs avahi-daemon avahi-utils debconf dnsmasq nfs-kernel-server ssh squashfs-tools ethtool net-tools epoptes epoptes-client sshfs man-db wget ; do
-	echo "===================== $P =========================================="
-	apt-get --yes install "$P"
-    done
     apt-get --yes --install-recommends install ltsp ltsp-binaries
 
-    mkdir -p /srv/ltsp/images/
-    mkdir -p /srv/tftp/ltsp/
-
-    mkdir -p /srv/iso/lernstick
-    
-    mkdir -p /etc/ltsp/bin/
-    mkdir -p /etc/ltsp/init/
-    mkdir -p /etc/ltsp/conf/
-    
-    ltsp_prepare
-
-    chown root:sudo /srv/iso
-    chmod 770 /srv/iso
-
-    #sed -e "s/^UID_MIN.*$/UID_MIN 10000/g" -i /etc/login.defs
-    #sed -e "s/^GID_MIN.*$/GID_MIN 10000/g" -i /etc/login.defs
-
-    systemctl enable ltsp-org-daemon.service
+    ltsp_setup
 }
 
 
