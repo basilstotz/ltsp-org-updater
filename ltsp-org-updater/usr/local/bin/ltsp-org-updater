@@ -95,6 +95,17 @@ EOF
     chown :sudo /etc/ltsp/wlan.conf
     chmod 660 /etc/ltsp/wlan.conf
 
+    cat <<EOF > /etc/avahi/services
+<?xml version="1.0" standalone='no'?>
+ <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
+ <service-group>
+   <name replace-wildcards="yes">ltsp-server-%h</name>
+   <service>
+     <type>_ltsp-ssh._tcp</type>
+     <port>22</port>
+   </service>
+ </service-group>
+EOF
     
 }
 
@@ -130,7 +141,7 @@ install_ltsp(){
     #sed -e "s/^UID_MIN.*$/UID_MIN 10000/g" -i /etc/login.defs
     #sed -e "s/^GID_MIN.*$/GID_MIN 10000/g" -i /etc/login.defs
 
-
+    systemctl enable ltsp-org-daemon.service
 }
 
 
@@ -264,7 +275,7 @@ ltsp_daemon(){
     while ! nm-online -t 3600; do
 	true
     done 
-    ltsp dnsmasq
+    ltsp dnsmasq --dns-server="$(grep server /etc/hosts | xargs | cut -d\  -f1)"
     # update initrd
     while true; do
 	make --makefile /etc/ltsp/conf/Makefile update

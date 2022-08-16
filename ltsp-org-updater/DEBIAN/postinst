@@ -26,7 +26,7 @@ case "$1" in
     configure)
 
 	systemctl disable ltsp-org-updater.service
-	systemctl enable  ltsp-org-daemon.service
+	systemctl disable  ltsp-org-daemon.service
 
     ;;
 

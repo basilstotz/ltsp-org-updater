@@ -8,6 +8,9 @@ if test -z "$LIVE_HOTSPOT"; then
 fi
 
 
+SERVER=$(cat /etc/hosts|grep server|xargs|cut -d" " -f1)
+
+
 SSID=$(echo "$LIVE_HOTSPOT"|cut -d"," -f1)
 PASSWORD=$(echo "$LIVE_HOTSPOT"|cut -d"," -f2)
 LEVEL=$(echo "$LIVE_HOTSPOT"|cut -d"," -f3)
