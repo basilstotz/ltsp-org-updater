@@ -1,7 +1,8 @@
 #!/bin/sh
 
 NAME="ltsp-org-updater"
-VERSION=$(date +%s)
+#VERSION=$(date +%s)
+VERSION=$(date +%Y-%m-%d-%H%M%S)
 
 test -d $NAME/DEBIAN || mkdir -p $NAME/DEBIAN
 cat <<EOF > $NAME/DEBIAN/control
