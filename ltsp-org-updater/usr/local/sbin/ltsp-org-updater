@@ -75,7 +75,7 @@ EOF
     chmod 660 /etc/ltsp/updater.conf
 
 
-cat <<EOF > /etc/ltsp/puavo.conf
+cat <<EOF > /dev/null     #/etc/ltsp/puavo.conf
 puavo.pkg.etcher latest
 puavo.pkg.cryptomator latest
 puavo.pkg.joplin latest
@@ -102,7 +102,7 @@ EOF
     chown :sudo /etc/ltsp/wlan.conf
     chmod 660 /etc/ltsp/wlan.conf
 
-    cat <<EOF > /etc/avahi/services
+    cat <<EOF > /etc/avahi/services/ltspserver-announce.service
 <?xml version="1.0" standalone='no'?>
  <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
  <service-group>
@@ -120,19 +120,20 @@ EOF
     #sed -e "s/^UID_MIN.*$/UID_MIN 10000/g" -i /etc/login.defs
     #sed -e "s/^GID_MIN.*$/GID_MIN 10000/g" -i /etc/login.defs
 
+    systemctl enable ltsp.service
     systemctl enable ltsp-org-daemon.service
 
 }
 
 install_ltsp(){
-    if grep -q Debian /etc/issue;then
-       curl -s -o /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list 
-       curl -s -o /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  
-    else
-       add-apt-repository --yes ppa:ltsp
-    fi    
-    apt-get --yes update
-    apt-get --yes --install-recommends install ltsp ltsp-binaries
+#    if grep -q Debian /etc/issue;then
+#       curl -s -o /etc/apt/sources.list.d/ltsp-ubuntu-ppa-focal.list https://ltsp.org/misc/ltsp-ubuntu-ppa-focal.list 
+#       curl -s -o /etc/apt/trusted.gpg.d/ltsp_ubuntu_ppa.gpg https://ltsp.org/misc/ltsp_ubuntu_ppa.gpg  
+#    else
+#       add-apt-repository --yes ppa:ltsp
+#    fi    
+#    apt-get --yes update
+#    apt-get --yes --install-recommends install ltsp ltsp-binaries
 
     ltsp_setup
 }
@@ -283,7 +284,7 @@ ltsp_daemon(){
 
 
 # checks and specials
-if test -z "$(command -v ltsp)"; then
+if ! test -f /etc/ltsp/ltsp.conf; then
     if test "$1" = "--install"; then
 	install_ltsp
     else
