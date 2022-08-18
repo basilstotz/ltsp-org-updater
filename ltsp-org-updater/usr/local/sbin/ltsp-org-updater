@@ -173,6 +173,7 @@ update_config(){
      cp /etc/ltsp/wlan.conf wlan
      
      HTML="/var/www/html"
+     mkdir -p $HTML
      tar -c -z -f $HTML/config.tgz *
      cd $HTML
      md5sum config.tgz > config.tgz.md5sum
