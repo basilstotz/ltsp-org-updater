@@ -90,29 +90,8 @@ puavo.pkg.thymiosuite
 puavo.pkg.walc latest
 puavo.pkg.write latest
 EOF
-
-    chown :sudo /etc/ltsp/puavo.conf
-    chmod 660 /etc/ltsp/puavo.conf
-
-     cat <<EOF > /etc/ltsp/wlan.conf
-SSID="escuela"
-PASSWORD="escuela0815"
-EOF
-
-    chown :sudo /etc/ltsp/wlan.conf
-    chmod 660 /etc/ltsp/wlan.conf
-
-    cat <<EOF > /etc/avahi/services/ltspserver-announce.service
-<?xml version="1.0" standalone='no'?>
- <!DOCTYPE service-group SYSTEM "avahi-service.dtd">
- <service-group>
-   <name replace-wildcards="yes">ltsp-server-%h</name>
-   <service>
-     <type>_ltsp-ssh._tcp</type>
-     <port>22</port>
-   </service>
- </service-group>
-EOF
+#    chown :sudo /etc/ltsp/puavo.conf
+#    chmod 660 /etc/ltsp/puavo.conf
 
     chown root:sudo /srv/iso
     chmod 770 /srv/iso
@@ -156,7 +135,10 @@ update_kernel(){
 update_config(){
      ltsp initrd
      ltsp ipxe
+}
 
+
+unused(){
      # save passwds
      DST="/home/.config/login"
      mkdir -p $DST
@@ -178,7 +160,6 @@ update_config(){
      tar -c -z -f $HTML/config.tgz *
      cd $HTML
      md5sum config.tgz > config.tgz.md5sum
-     
 }
 
 update_image(){
