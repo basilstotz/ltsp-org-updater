@@ -61,7 +61,7 @@ EOF
     chmod 660 /etc/ltsp/ltsp.conf
 
     cat <<EOF > /etc/ltsp/updater.conf
-NETWORK_2NICS=true
+ROUTER=false
 
 UPDATER_START="56 22"  #format: minute stunde !
 UPDATER_STOP="56 05"
@@ -247,26 +247,27 @@ ltsp_daemon(){
 
     . /etc/ltsp/updater.conf
 
+    # init dnsmasq
+    nm-online -s
+    while ! nm-online -t 3600; do
+	true
+    done
+    if $ROUTER; then
+	DEV=$(nmcli -t -f DEVICE,TYPE connection show | grep ethernet | head -n1 | cut -d: -f2)
+	nmcli device set "$DEV" managed no
+	ip address add dev "$DEV" 192.168.67.1/24
+	ip link set "$DEV" up
+	ltsp dnsmasq --dns=1 --proxy-dhcp=0 --dns-server="1.1.1.3 1.1.1.2" 
+    else
+        DNS="$(grep server /etc/hosts | xargs | cut -d\  -f1)"	
+	ltsp dnsmasq  # --dns-server="$DNS"
+    fi
+
     # init nfs
     if ! test -f /etc/exports.d/ltsp-nfs.exports; then
 	ltsp nfs
     fi
-    # init dnsmasq
-    while ! nm-online -t 3600; do
-	true
-    done
-    if $NETWORK_2NICS; then
-	nm-online -s
-	DEV=$(nmcli -t -f TYPE,DEVICE c s|grep ethernet|head -n1|cut -d: -f2)
-	nmcli device set "$DEV" managed no
-	ip address add dev "$DEV" 192.168.67.1/24
-	ip link set "$DEV" up
-	
-	DNS="$(grep server /etc/hosts | xargs | cut -d\  -f1)"
-	ltsp dnsmasq --dns=1 --proxy-dhcp=0 --dns-server="1.1.1.3 1.1.1.2" 
-    else
-	ltsp dnsmasq  --dns-server="$DNS"
-    fi
+
     
     # update initrd
     while true; do
