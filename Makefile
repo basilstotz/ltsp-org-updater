@@ -1,5 +1,5 @@
 PHONY: all
-all: package copy
+all: package
 
 .PHONY: package
 package:
