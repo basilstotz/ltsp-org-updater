@@ -25,8 +25,130 @@ set -e
 case "$1" in
     configure)
 
-	systemctl disable ltsp-org-updater.service
-	systemctl disable  ltsp-org-daemon.service
+
+       # /srv/ltsp
+       mkdir -p /srv/ltsp
+       chown root:root /srv/ltsp
+       chmod 775 /srv/ltsp
+
+       mkdir -p /srv/ltsp/images/
+       chown  root:root /srv/ltsp/images/
+       chmod 775 /srv/ltsp/images
+
+       mkdir -p /srv/tftp
+       chown  root:root /srv/tftp
+       chmod 775 /srv/tftp
+
+       mkdir -p /srv/tftp/ltsp/
+       chown  root:root /srv/tftp/ltsp/
+       chmod 775 /srv/tftp/ltsp
+
+       mkdir -p /srv/iso
+       chown  root:sudo /srv/iso/
+       chmod 775 /srv/iso
+
+       mkdir -p /srv/iso/lernstick
+       chown   root:root /srv/iso/lernstick
+       chmod 775 /srv/iso/lernstick
+
+       # /etc/ltsp
+       mkdir -p /etc/ltsp
+       chown  root:sudo /etc/ltsp
+       chmod 775 /etc/ltsp
+
+       mkdir -p /etc/ltsp/bin
+       chown  root:root /etc/ltsp/bin
+       chmod 775 /etc/ltsp/bin
+
+       mkdir -p /etc/ltsp/init
+       chown  root:root /etc/ltsp/init
+       chmod 775 /etc/ltsp/init
+
+       mkdir -p /etc/ltsp/conf
+       chown  root:root /etc/ltsp/conf
+       chmod 775 /etc/ltsp/conf
+
+
+
+       # https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-run-time-behaviours.en.html
+
+       # all keyboard are in: /usr/share/X11/xkb/rules/base.lst
+       # all locales are in: /usr/share/i18n/SUPPORTED
+
+       # Peru Timezone America/Lima
+
+       if ! test -f /etc/ltsp/ltsp.conf; then
+
+	  cat <<'EOF' >  /etc/ltsp/ltsp.conf
+[server]
+KERNEL_PARAMETERS="locales=es_PE.UTF-8,de_DE.UTF-8,de_CH.UTF-8 keyboard-layouts=latam,de,ch,us timezone=America/Lima hotspot=escuela,escuela0815 quiet splash"
+
+#DEFAULT_IMAGE="lernstick"
+
+#do not change
+ADD_IMAGE_EXCLUDES="/etc/ltsp/conf/add-image.excludes"
+
+[common]
+#MENU_TIMEOUT="-1"
+#GDM3_CONF="WaylandEnable=false"  
+
+[clients]
+#CRONTAB_x="30 15 * * * poweroff"
+
+#do not change
+POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/ltsp/init/" 
+EOF
+         chown root:sudo /etc/ltsp/ltsp.conf
+         chmod 664 /etc/ltsp/ltsp.conf
+     fi
+       
+     if ! test -f /etc/ltsp/updater.conf; then
+        cat <<EOF > /etc/ltsp/updater.conf
+ROUTER=false
+
+UPDATER_START="56 22"  #format: minute stunde !
+UPDATER_STOP="56 05"
+
+LERNSTICK_ENABLE="true"
+LERNSTICK_ISO="lernstick_debian11_latest.iso"
+LERNSTICK_URL="https://releases.lernstick.ch"
+
+IMAGE_ENABLE="false"
+EOF
+
+       chown root:sudo /etc/ltsp/updater.conf
+       chmod 664 /etc/ltsp/updater.conf
+    fi
+
+
+################################################     
+cat <<EOF > /dev/null     #/etc/ltsp/puavo.conf
+puavo.pkg.etcher latest
+puavo.pkg.cryptomator latest
+puavo.pkg.joplin latest
+puavo.pkg.lumi latest
+puavo.pkg.marktext latest
+puavo.pkg.onlyoffice latest
+puavo.pkg.rpiimager latest
+puavo.pkg.sozi latest
+puavo.pkg.styluslab latest
+puavo.pkg.telegram latest
+puavo.pkg.thymiosuite 
+puavo.pkg.walc latest
+puavo.pkg.write latest
+EOF
+#    chown :sudo /etc/ltsp/puavo.conf
+#    chmod 660 /etc/ltsp/puavo.conf
+
+    #sed -e "s/^UID_MIN.*$/UID_MIN 10000/g" -i /etc/login.defs
+    #sed -e "s/^GID_MIN.*$/GID_MIN 10000/g" -i /etc/login.defs
+############
+
+      systemctl enable ltsp.service
+      systemctl enable ltsp-org-daemon.service
+      systemctl disable ltsp-org-updater.service
+
+      #systemctl disable  ltsp-org-daemon.service
 
     ;;
 
