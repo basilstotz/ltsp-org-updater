@@ -13,7 +13,7 @@ Maintainer: Basil Stotz <stotz@amxa.ch>
 Package: $NAME
 Version: $VERSION 
 Architecture: amd64
-Depends: ltsp,ipxe,curl,webfs,avahi-daemon,avahi-utils,debconf,dnsmasq,nfs-kernel-server,ssh,squashfs-tools,ethtool,net-tools,epoptes,epoptes-client,sshfs,man-db,wget,openssh-server 
+Depends: ltsp,ipxe,curl,webfs,avahi-daemon,avahi-utils,debconf,dnsmasq,nfs-kernel-server,ssh,squashfs-tools,ethtool,net-tools,epoptes,epoptes-client,sshfs,man-db,wget,openssh-server,make 
 Description: Setup and maintain a LTSP server on debian (and maybe ubuntu)
  Setup and maintain a LTSP server on ubuntu/debian (and maybe ubuntu) 
 EOF
