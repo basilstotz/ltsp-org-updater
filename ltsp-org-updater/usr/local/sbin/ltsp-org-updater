@@ -123,6 +123,7 @@ update_lernstick(){
 		     #ok, install it
 		     test -f /srv/ltsp/images/lernstick.img && rm /srv/ltsp/images/lernstick.img
 		     ln "$REALNAME" /srv/ltsp/images/lernstick.img
+		     cp "$NAME.iso.md5" "$REALNAME.md5"
 		     update_kernel
 		     ltsp initrd     #maybe not needed
 		     ltsp ipxe
