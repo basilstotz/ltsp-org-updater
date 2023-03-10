@@ -52,6 +52,8 @@ case "$1" in
        chmod 775 /srv/iso/lernstick
 
        # /etc/ltsp
+       cp -r /usr/local/share/ltsp-presets/ltsp /etc/.
+
        mkdir -p /etc/ltsp
        chown  root:sudo /etc/ltsp
        chmod 775 /etc/ltsp
@@ -67,7 +69,6 @@ case "$1" in
        mkdir -p /etc/ltsp/conf
        chown  root:root /etc/ltsp/conf
        chmod 775 /etc/ltsp/conf
-
 
 
        # https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-run-time-behaviours.en.html
