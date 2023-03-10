@@ -214,7 +214,7 @@ ltsp_daemon(){
 	#never reaches here!
 	exit 1
     fi
-*fi
+#fi
 
 #ok
 
@@ -224,12 +224,31 @@ if ! test -f /run/ltsp-org-updater.lock;then
     touch /run/ltsp-org-updater.lock
     case "$1" in
  	 --help)
-	     echo "usage: sudo $(basename $0) [ --config | --image | --lernstick | --update ]"
+	     echo "usage: sudo $(basename $0) [ --start | --stop | --enable | --disable | --config | --image | --lernstick | --update ]"
 	     ;;	    
 	 --cron)   
 	     echo "$UPDATER_START * * * root /usr/bin/systemctl start ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-start
              echo "$UPDATER_STOP * * * root /usr/bin/systemctl stop  ltsp-org-updater.service" > /etc/cron.d/ltsp-org-updater-stop
 	     systemctl restart cron.service
+	     ;;
+	 --start)
+	     systemctl start dnsmasq.service
+	     sleep 5
+	     systemctl start ltsp-org-daemon.service
+	     ;;
+	 --stop)
+	     systemctl stop ltsp-org-daemon.service
+	     systemctl stop dnsmasq.service
+	     #ltsp dnsmasq -p0 -r0
+	     ;;
+	 --disable)
+	     systemctl disable ltsp-org-daemon.service
+	     systemctl disable dnsmasq.service
+	     #ltsp dnsmasq -p0 -r0
+	     ;;
+	 --enable)
+	     systemctl enable ltsp-org-daemon.service
+	     systemctl enable dnsmasq.service
 	     ;;
 	 --update)
  	     #also called by cron once a day

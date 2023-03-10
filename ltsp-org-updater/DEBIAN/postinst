@@ -145,7 +145,8 @@ EOF
 ############
 
       systemctl enable ltsp.service
-      systemctl enable ltsp-org-daemon.service
+      systemctl disable dnsmasq.service
+      systemctl disable ltsp-org-daemon.service
       systemctl disable ltsp-org-updater.service
 
       #systemctl disable  ltsp-org-daemon.service
