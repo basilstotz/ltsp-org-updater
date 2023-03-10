@@ -52,25 +52,36 @@ case "$1" in
        chmod 775 /srv/iso/lernstick
 
        # /etc/ltsp
-       cp -r /usr/local/share/ltsp-presets/ltsp /etc/.
-
-       mkdir -p /etc/ltsp
+       if ! test -d /etc/ltsp/; then
+           cp -r /usr/local/share/ltsp-presets/ltsp /etc/.
+	   chown -R root:root /etc/ltsp
+       fi
+       
+       #mkdir -p /etc/ltsp
        chown  root:sudo /etc/ltsp
        chmod 775 /etc/ltsp
 
-       mkdir -p /etc/ltsp/bin
+       #mkdir -p /etc/ltsp/bin
        chown  root:root /etc/ltsp/bin
        chmod 775 /etc/ltsp/bin
 
-       mkdir -p /etc/ltsp/init
+       #mkdir -p /etc/ltsp/init
        chown  root:root /etc/ltsp/init
        chmod 775 /etc/ltsp/init
 
-       mkdir -p /etc/ltsp/conf
+       #mkdir -p /etc/ltsp/conf
        chown  root:root /etc/ltsp/conf
        chmod 775 /etc/ltsp/conf
 
+       chown root:sudo /etc/ltsp/updater.conf
+       chmod 664 /etc/ltsp/updater.conf
 
+       chown root:sudo /etc/ltsp/ltsp.conf
+       chmod 664 /etc/ltsp/ltsp.conf
+
+       chown root:root /usr/local/sbin/ltsp-org-updater
+       
+       
        # https://live-team.pages.debian.net/live-manual/html/live-manual/customizing-run-time-behaviours.en.html
 
        # all keyboard are in: /usr/share/X11/xkb/rules/base.lst
