@@ -253,7 +253,9 @@ if ! test -f /run/ltsp-org-updater.lock;then
 	     ;;
 	 --update)
  	     #also called by cron once a day
-	     update_both
+	     if systemctl -q is-active ltsp-org-daemon.service; then
+	         update_both
+	     fi
 	     ;;
 	 --config)
 	     update_config
