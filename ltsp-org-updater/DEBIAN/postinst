@@ -52,7 +52,7 @@ case "$1" in
        chmod 775 /srv/iso/lernstick
 
        # /etc/ltsp
-       if ! test -d /etc/ltsp/; then
+       if ! test -f /etc/ltsp/ltsp.conf; then
            cp -r /usr/local/share/ltsp-presets/ltsp /etc/.
 	   chown -R root:root /etc/ltsp
        fi
