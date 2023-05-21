@@ -34,14 +34,7 @@ Remember: You don't have to install anything on the clients, just setting the bo
 
 Install a and maintain LTSP-Server (http://ltsp.org) without any "shell things" on a Ubuntu box. It's designed for teachers with no experience on the shell.
 
-До українського перекладу: https://github.com/basilstotz/ltsp-org-updater/blob/main/README-UA.md
 
-## Quick Start
-
-- Install a standard Ubuntu (https://ubuntu.com/download/desktop) on a computer with enough power (at least 8GByte RAM, 5GByte SSD per student, ....)
-- Downlaod the Debian package (https://github.com/basilstotz/ubuntu-ltsp-updater/releases/download/v0.01/ltsp-updater-amd64.deb) and doppleclick on it in order to install the package. You can safely delete the package afterwards.
-- Search for the `LTSP-Updater` application and run it. At first run, it will download (be sure it's connected to the internet!) and install some additional software. This may take a very long time. Consider up to 30 minutes!  
-- **Very important:** Whenever you make changes (install/remove software, change network settings or add/remove users) run the `LTSP-Updater` again. This may take a very long time. Consider up to 30 minutes! 
 
 ## Build Debian Package
 
