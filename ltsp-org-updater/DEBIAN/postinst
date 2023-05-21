@@ -53,7 +53,7 @@ case "$1" in
 
        # /etc/ltsp
        if ! test -f /etc/ltsp/ltsp.conf; then
-           cp -r /usr/local/share/ltsp-presets/ltsp /etc/.
+           cp -r /usr/share/doc/ltsp-presets/ltsp /etc/.
 	   chown -R root:root /etc/ltsp
        fi
        
@@ -73,12 +73,7 @@ case "$1" in
        chown  root:root /etc/ltsp/conf
        chmod 775 /etc/ltsp/conf
 
-       chown root:sudo /etc/ltsp/updater.conf
-       chmod 664 /etc/ltsp/updater.conf
-
-       chown root:sudo /etc/ltsp/ltsp.conf
-       chmod 664 /etc/ltsp/ltsp.conf
-
+       
        chown root:root /usr/local/sbin/ltsp-org-updater
        
        
