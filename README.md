@@ -27,15 +27,14 @@ The whole dir ```/etc/ltsp/``` is copied to client. This means you can add arbit
 ### Kernal Parameters
 
 Next to the usual Debian-Live parameters the is an option to use every (capable) fatclient as an wlan hotspot: When the option
-
-```hostspot=<SSID>,<PASSWD>```
-
-is given the client will setup an wlan hotspot with SSID <SSID> and >PASSWD> as password.
+```KERNEL_PARAMETERS=" ... hostspot=<SSID>,<PASSWD> ...``` in file ```/etc/ltsp/ltsp.conf``` 
+, is given the client will setup an wlan hotspot with SSID <SSID> and >PASSWD> as password.
 
 ### Post Init Scripts
 
- The directory ```/etc/ltsp/init/``` contains init-script, which executed during boot after init and before systemd. 
-
+ The directory ```/etc/ltsp/init/``` contains init-script, which executed during boot after init and before systemd. They are called
+ by the ```POST_INIT_RUN_PARTS="/usr/bin/run-parts /etc/ltsp/init/``` in file ```/etc/ltsp/ltsp.conf```
+ 
 
 ## Build Debian Package
 
