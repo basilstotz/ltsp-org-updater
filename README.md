@@ -15,8 +15,21 @@ It consists of 2 parts:
 * A cron job, which check for updated Lernstick images und installs then if a new one is available.
 
 There are 2 config files:
-* *ltsp.conf* this a the config for LTSP
+* *ltsp.conf* this a the config for LTSP (see http://ltsp.org/man/ltsp.conf/ for deatails)
 * *updater.conf* this configures the image updater
+
+```
+ROUTER=false          # if false one nic setup; if true two nic setup (not well tested)
+
+UPDATER_START="56 22"  #format: minute stunde !  startime for image update
+UPDATER_STOP="56 05"
+
+LERNSTICK_ENABLE="true"
+LERNSTICK_ISO="lernstick_debian11_latest.iso"
+LERNSTICK_URL="https://releases.lernstick.ch"
+
+IMAGE_ENABLE="false"     # set true if you want update chrootless image 
+```
 
 ### In Detail
 
@@ -26,9 +39,9 @@ The whole dir ```/etc/ltsp/``` is copied to client. This means you can add arbit
 
 ### Kernal Parameters
 
-Next to the usual Debian-Live parameters the is an option to use every (capable) fatclient as an wlan hotspot: When the option
+When the option
 ```KERNEL_PARAMETERS=" ... hostspot=<SSID>,<PASSWD> ...``` in file ```/etc/ltsp/ltsp.conf``` 
-, is given the client will setup an wlan hotspot with SSID <SSID> and >PASSWD> as password.
+is given, the client will (if capable) setup an wlan hotspot with SSID <SSID> and >PASSWD> as password.
 
 ### Post Init Scripts
 
