@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if test -z "$(command -v flatpak)"; then
+    apt --yes install /etc/ltsp/debs/flatpak_*_amd64.deb
+fi
+
+mkdir -p /etc/flatpak/installations.d
+
+cat <<EOF > /etc/flatpak/installations.d/ltsp.conf
+[Installation "ltsp"]
+Path=/srv/flatpak
+DisplayName=ltsp
+StorageType=harddisk
+EOF
+
+cat <<'EOF' > /etc/profile.d/xdg_data_dirs.sh
+XDG_DATA_DIRS="/usr/share/gnome:/usr/local/share/:/usr/share/:$XDG_DATA_DIRS"
+EOF

@@ -1,0 +1,2 @@
+/srv/pkgs	*(ro,async,crossmnt,no_subtree_check,no_root_squash,insecure)
+/var/lib/flatpak    *(ro,async,crossmnt,no_subtree_check,no_root_squash,insecure)

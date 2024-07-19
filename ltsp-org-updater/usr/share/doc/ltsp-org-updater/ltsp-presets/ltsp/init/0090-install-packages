@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cat <<EOF > /etc/systemd/system/install-ltsp-pkgs.service
+[Unit]
+Description=Install Packages
+After=srv-appimage.mount
+#Requires=srv-appimage.mount
+#Wants=network-online.target systemd-networkd-wait-online.service
+
+[Service]
+Type=oneshot
+ExecStart=/etc/ltsp/bin/install-pkgs
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl enable install-ltsp-pkgs.service
+

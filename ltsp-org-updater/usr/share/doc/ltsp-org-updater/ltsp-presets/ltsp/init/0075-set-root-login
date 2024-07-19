@@ -1,0 +1,15 @@
+#!/bin/sh
+
+echo "root:EseKeRs." | /usr/sbin/chpasswd
+
+if ! test -f /etc/ssh/ssh_host_rsa_key; then
+    ssh-keygen -A
+fi
+
+
+mkdir -p /root/.ssh
+cat <<EOF >/root/.ssh/authorized_keys
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDBS3I5d00sqgYD4Pdnt0BxM+iAqHYaQHG7aS4vwYJwnwNKhtL+Qln1a3XhmYS/XXwnwhPj9+DotZzA2nrsIeOSQ9CJrjllaBsv7soil520UjwNoaLS6iNXke3JdfFvSEOKIpOSRaDGNzJUne6qddKGVg3nIfbqW8sGJSm367INpZRLCw9hA5+FsdbDkqpJmsVKyKgqiGSIOYaqmGvN986fI8zc4CdcyPSzh6OhzTQtBNyGsS+CHPDc06poeZWXQgz+T4a0h7iJOdQRR77HLwosVrgp7qlrTTDIO4+H7bmjcnMfRdsS322J7foQLisj0LdmGam4oIPpRQGKvAhscOLU4ABDyuD50M9EeLcMbmSER9+ycIfq2EN8pW3YwR9ZXvTB07QEIyl3ztM7IJxnLPbmSj5IVbwd4A0ZAMKSsI2HfeYg4yFciIvl+7X+EQFHezckcLz7LaDTAtjNg5G/uazUDSKQNY/LnkuZzyiteC2oBnmh3/kxbwL07yy4pm1sOhU= cds@cds-server
+EOF
+
+chmod 600 /root/.ssh/authorized_keys

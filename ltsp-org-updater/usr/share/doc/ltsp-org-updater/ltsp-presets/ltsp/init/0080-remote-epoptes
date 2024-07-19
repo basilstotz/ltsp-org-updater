@@ -1,0 +1,14 @@
+#!/bin/sh
+
+if test -e /usr/sbin/ltsp; then
+  ln -s /usr/sbin/ltsp /usr/bin/ltsp
+fi
+
+#if test -e /usr/bin/epoptes; then
+#  mv /usr/bin/epoptes /usr/bin/epoptes.dist
+#  cat <<EOF > /usr/bin/epoptes
+##!/bin/sh
+#/usr/sbin/ltsp remoteapps epoptes
+#EOF
+#  chmod +x /usr/bin/epoptes
+#fi

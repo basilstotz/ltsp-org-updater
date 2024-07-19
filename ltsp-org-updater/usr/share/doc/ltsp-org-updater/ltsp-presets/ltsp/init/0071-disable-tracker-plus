@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# https://gist.github.com/dineshsaini/caf8fb2d53b315cf32f0d55092ef4c0e
+# https://kb.adamsdesk.com/application/gnome_tracker/
+
+if test -f /etc/xdg/autostart/org.gnome.Software.desktop; then
+    rm /etc/xdg/autostart/org.gnome.Software.desktop
+fi
+
+#exit
+
+#if false; then
+if test -f /etc/xdg/autostart/tracker-miner-fs-3.desktop; then
+    rm /etc/xdg/autostart/tracker-miner-fs-3.desktop
+#    echo "Hidden=true" >> /etc/xdg/autostart/tracker-miner-fs-3.desktop
+#    sed -i /etc/xdg/autostart/tracker-miner-fs-3.desktop -e"s@X-GNOME-Autostart-enabled=true@X-GNOME-Autostart-enabled=false@g"
+fi
+
+
+#systemctl mask packagekit.service
+
+cat <<'EOF' >/etc/profile.d/disable-tracker-search.sh
+if ! test "$UID" = 0; then
+   if ! test -e "/home/$USER/.config/systemd/user/tracker-miner-fs-3.service"; then
+      systemctl --user mask tracker-miner-fs-control-3.service
+      systemctl --user mask tracker-miner-fs-3.service
+      systemctl --user mask tracker-extract-3.service
+   fi
+   gsettings set org.freedesktop.Tracker3.Miner.Files enable-monitors false
+   gsettings set org.freedesktop.Tracker3.Miner.Files index-single-directories []
+   gsettings set org.freedesktop.Tracker3.Miner.Files index-recursive-directories []
+
+   gsettings set org.gnome.desktop.search-providers disable-external true
+
+fi
+
+EOF
+
+#fi

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+if test -d /srv/pkgs; then
+  for I in /srv/pkgs/*/rules; do
+     if test -e "$I"; then
+        $I
+     fi	
+  done
+fi
