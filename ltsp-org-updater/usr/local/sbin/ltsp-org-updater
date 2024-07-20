@@ -75,7 +75,7 @@ link_iso(){
 
 ###################################################################################
 
-update_kernel(){
+update_kernels(){
     if test -n "$(ls $PFAD )";then
 	for I in $(ls $PFAD/*.img);do
 	    BI=$(basename -s .img "$I")
@@ -90,6 +90,7 @@ update_kernel(){
 }
 
 update_config(){
+     update_kernels
      ltsp initrd
      ltsp ipxe
 }
@@ -98,9 +99,7 @@ update_config(){
 
 update_image(){
      ltsp image /
-     update_kernel
-     ltsp initrd           #maybe not needed
-     ltsp ipxe
+     update_config
 }
 
 update_lernstick(){
